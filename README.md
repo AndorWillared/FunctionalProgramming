@@ -15,7 +15,7 @@
       - Mean Squared Error
       - ...
 - Persistenz → Weights und Biases &rarr; save & load
-- Datasets &rarr parse
+- Datasets &rarr; parse
     - MNIST
     - ...
     - eigenes?
