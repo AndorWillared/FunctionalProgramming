@@ -2,7 +2,7 @@
 
 ## Todo
 - Forward Pass &rarr; predict
-    - Activation Functions
+    - Activation
         - Leaky ReLU
         - Softmax
         - Sigmoid
