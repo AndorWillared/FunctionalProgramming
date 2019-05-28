@@ -1,7 +1,7 @@
 # Neural Network Haskell
 
 ## Todo
-- Forward Pass >> predict <<
+- Forward Pass &rarr predict
     - Activation Functions
         - Leaky ReLU
         - Softmax
