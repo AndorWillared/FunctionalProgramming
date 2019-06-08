@@ -21,10 +21,14 @@ randomMatrix n m b = matrix n m $ \(i,j) -> unsafePerformIO $ getStdRandom $ ran
 zeroMatrix :: Int -> Int -> Matrix Float
 zeroMatrix n m = matrix n m $ \(i,j) -> 0.0
 
+sigmoid x = 0.5 * (1 + tanh (x/2))
+
 forward [] _ activation = []
 forward _ [] activation = []
-forward (w:weights) (b:biases) activation = ergebnis : (forward weights biases ergebnis) where ergebnis = (multStd w activation)
+forward (w:weights) (b:biases) activation = ergebnis : (forward weights biases ergebnis) where ergebnis = ((multStd w activation))
 
 forwardTest (w:weights) (b:biases) activation = ergebnis where ergebnis = (multStd w activation)
 
 forwardPass network input = input : forward (weights network) (biases network) input
+
+--backProp network input = 
