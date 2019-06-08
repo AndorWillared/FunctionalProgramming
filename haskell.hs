@@ -1,32 +1,28 @@
-data Matrix a = Matrix [[a]] deriving (Eq, Show)
+import Data.Matrix
+import System.Random
+import System.IO.Unsafe
 
-addMatrix :: Num a => [[a]] -> [[a]] -> [[a]]
-addMatrix = zipWith (zipWith (+))
+data NeuralNetwork = NeuralNetwork { weights::[Matrix Float], biases::[Matrix Float] } deriving Show
 
-mulMatrixHelp m1 m2 zw = 
-mulMatrix m1 m2 = []
+-- initialize <inputCount> <outputCount> <hiddenCount>
+initializeNeuralNetwork :: [Int] -> NeuralNetwork
+initializeNeuralNetwork l = NeuralNetwork 
+                            [randomMatrix (l!!i) (l!!(i+1)) (-1.0, 1.0) | i <- [0..((length l) -2)]]
+                            [zeroMatrix (l!!i) 1 | i <- [1..((length l) -1)]]
 
-instance Num a => Num (Matrix a) where 
-    (Matrix m1) + (Matrix m2) = Matrix (addMatrix m1 m2)
-    (Matrix m1) * (Matrix m2) = Matrix (mulMatrix m1 m2)
-    negate = undefined
-    abs = undefined
-    signum = undefined
-    fromInteger = undefined
-    
-sigmoid:: Floating a => a -> a
-sigmoid x = 1.0/(1.0 + exp(-x))
+-- generateRandomMatrix :: (Float a) => Int -> Int -> Matrix a
+randomMatrix n m b = matrix n m $ \(i,j) -> unsafePerformIO $ getStdRandom $ randomR b
 
-iterateLists :: Floating a => [a] -> [a] -> [(a,a)]
-iterateLists (a:ax) (b:bx)= (a,b) : iterateLists ax bx
-iterateLists _ _ = []
+-- generateZeroMatrix :: (Float a) => Int -> Int -> Matrix a
+zeroMatrix n m = matrix n m $ \(i,j) -> 0.0
 
-neuron_out :: Floating a => [a] -> [a] -> a -> a -- -b or +b?
-neuron_out input weights bias = sum [ sigmoid (i*w-bias) | (i,w) <- (iterateLists input weights)]
+-- get number between -1 and 1 (both inclusive)
 
---do_forward_pass :: Floating a => 
-do_forward_pass input weights biases = []
+-- randomNumber = fst randomValue where randomValue = randomR ((-1.0), 1.0)
 
-forward_pass :: Floating a => [a] -> [a] -> [a] -> [[a]] -- w = weights of one layer, ws = weights of other layers
-forward_pass input (w:ws) (b:bs) = do_forward_pass input w b ++ forward_pass (do_forward_pass input w b) ws bs
-forward_pass input _ _ = []
+-- randomNumber = unsafePerformIO $ getStdRandom randomGen
+
+-- randomGen = unsafePerformIO $ getStdGen randomGen where randomGen = unsafePerformIO
+
+main = do
+    print $ show (initializeNeuralNetwork [2,3,2])
