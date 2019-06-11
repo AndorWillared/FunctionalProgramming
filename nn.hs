@@ -90,13 +90,20 @@ forwardPass network input = input : forward (weights network) (biases network) i
 
 -- ... in development ...
 
---backProp [] _ _ error = []
---backProp _ [] _ error = []
---backProp _ _ [] error = []
---backProp (w:r_weights) (b:r_biases) (a:r_activations) error = mmul error (fmap sigmoid' (b + (multStd w a)))
+-- [a,b,c,d,e] [1,2,3,4,5] [(a,1),(b,2),(c,3)]
 
---backPropTest network input output = backProp (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) ( (last fp - output)) where fp = forwardPass network input
 
+reshape n m matrix = fromList n m $ toList matrix
+
+backProp [] _ _ error = []
+backProp _ [] _ error = []
+backProp _ _ [] error = []
+backProp (w:r_weights) (b:r_biases) (a:r_activations) error = (multStd (reshape (nrows act_error) 1 act_error) (reshape 1 (nrows a) a), act_error) : backProp r_weights r_biases r_activations (multStd act_error w) 
+                                                                where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
+
+backPropTest network input output = backProp (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output) where fp = forwardPass network input
+
+q = backPropTest (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0])
 -- ...
 
 
@@ -105,13 +112,13 @@ forwardPass network input = input : forward (weights network) (biases network) i
 -- Functionality: 'Multiply' two matrixes (not matrix multiplication)
 
 -- Arguments:
--- Matrix Integer - input matrix m
--- Matrix Integer - input matrix n
--- Matrix Integer - result - matrix,
+-- Matrix Float - input matrix m
+-- Matrix Float - input matrix n
+-- Matrix Float - result - matrix,
 --                  where each field is r_ij = m_ij * n_ij
 
-mmul :: Matrix Integer -> Matrix Integer -> Matrix Integer
-mmul m n = fromList (length listM) (length listN) (zipWith (*) listM listN)
+mul :: Matrix Float -> Matrix Float -> Matrix Float
+mul m n = fromList (length listM) (length listN) (zipWith (*) listM listN)
            where listM = toList m
                  listN = toList n
 
