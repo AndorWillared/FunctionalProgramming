@@ -7,13 +7,19 @@ data NeuralNetwork = NeuralNetwork { weights::[Matrix Float], biases::[Matrix Fl
 
 -- current test-function
 
+getTrainFactor :: Float -> Float
+-- standard trainFactor = 1
+getTrainFactor x   | x <= 0 = 1
+                | otherwise = x
+
 main = do
     let trainig_data = getTrainingData 1000
     let network = initializeNeuralNetwork [2,3,1]
     print network
     print "-------------------"
     print (forwardPass network (fromList 2 1[2,1]))
-    let trained_network = train network trainig_data
+    let trainFactor = getTrainFactor 0.75
+    let trained_network = train network trainig_data trainFactor
     input1 <- getLine
     input2 <- getLine
     let val1 = read input1 :: Float
@@ -113,18 +119,19 @@ getUpdates _ _ [] _ = []
 getUpdates (w:r_weights) (b:r_biases) (a:r_activations) error = ((multStd act_error (transpose a)), act_error) : getUpdates r_weights r_biases r_activations (multStd (transpose w) act_error) -- ist das berechnen des nächsten fehlers richtig?
                                                                 where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
 
-getUpdatedValues [] _ _ = []
-getUpdatedValues _ [] _ = []
-getUpdatedValues (x:to_update) ((wU,bU):updates) is_bias = x - (if(is_bias) then bU else wU) : getUpdatedValues to_update updates is_bias
+getUpdatedValues :: [Matrix Float] -> [(Matrix Float,Matrix Float)] -> Bool -> Float -> [Matrix Float]
+getUpdatedValues [] _ _ _ = []
+getUpdatedValues _ [] _ _ = []
+getUpdatedValues (x:to_update) ((wU,bU):updates) is_bias trainFactor = x - fmap (*trainFactor) (if(is_bias) then bU else wU) : getUpdatedValues to_update updates is_bias trainFactor
 
-applyUpdates network updates = NeuralNetwork (getUpdatedValues (weights network) updates False) (getUpdatedValues (biases network) updates True)
+applyUpdates network updates trainFactor = NeuralNetwork (getUpdatedValues (weights network) updates False trainFactor) (getUpdatedValues (biases network) updates True trainFactor)
 
-backprop network input output = applyUpdates network (reverse $ getUpdates (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output)) where fp = forwardPass network input
+backprop network input output trainFactor = applyUpdates network (reverse $ getUpdates (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output)) trainFactor where fp = forwardPass network input
 
-q = backprop (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0])
+q = backprop (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0]) 0.1
 
-train network [] = network
-train network ((input,output):trainig_data) = train (backprop network input output) trainig_data;
+train network [] _ = network
+train network ((input,output):trainig_data) trainFactor = train (backprop network input output trainFactor) trainig_data trainFactor;
 -- ...
 
 -- |Helpers| --
