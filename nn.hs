@@ -118,7 +118,7 @@ q = backPropTest (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fro
 --                  where each field is r_ij = m_ij * n_ij
 
 mul :: Matrix Float -> Matrix Float -> Matrix Float
-mul m n = fromList (length listM) (length listN) (zipWith (*) listM listN)
+mul m n = fromList (nrows n) (ncols m) (zipWith (*) listM listN)
            where listM = toList m
                  listN = toList n
 
