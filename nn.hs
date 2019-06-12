@@ -88,25 +88,30 @@ forwardPass network input = input : forward (weights network) (biases network) i
 
 -- || ------------------------------ ||--
 
--- ... in development ...
 
 -- [a,b,c,d,e] [1,2,3,4,5] [(a,1),(b,2),(c,3)]
 
 
 reshape n m matrix = fromList n m $ toList matrix
 
-backProp [] _ _ error = []
-backProp _ [] _ error = []
-backProp _ _ [] error = []
-backProp (w:r_weights) (b:r_biases) (a:r_activations) error = ((multStd act_error (transpose a)), act_error) : backProp r_weights r_biases r_activations (multStd (transpose act_error) w) -- ist das berechnen des nächsten fehlers richtig?
+
+getUpdates [] _ _ _ = []
+getUpdates _ [] _ _ = []
+getUpdates _ _ [] _ = []
+getUpdates (w:r_weights) (b:r_biases) (a:r_activations) error = ((multStd act_error (transpose a)), act_error) : getUpdates r_weights r_biases r_activations (multStd (transpose w) act_error) -- ist das berechnen des nächsten fehlers richtig?
                                                                 where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
 
-backPropTest network input output = backProp (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output) where fp = forwardPass network input
+getUpdatedValues [] _ _ = []
+getUpdatedValues _ [] _ = []
+getUpdatedValues (x:to_update) ((wU,bU):updates) is_bias = x + (if(is_bias) then bU else wU) : getUpdatedValues to_update updates is_bias
 
-q = backPropTest (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0])
+applyUpdates network updates = NeuralNetwork (getUpdatedValues (weights network) updates False) (getUpdatedValues (biases network) updates True)
+
+backprop network input output = applyUpdates network (reverse $ getUpdates (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output)) where fp = forwardPass network input
+
+q = backprop (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0])
+
 -- ...
-
-t w a b error= (multStd (transpose act_error) a) where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
 
 -- |Helpers| --
 
