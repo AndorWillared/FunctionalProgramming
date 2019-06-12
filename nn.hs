@@ -98,7 +98,7 @@ reshape n m matrix = fromList n m $ toList matrix
 backProp [] _ _ error = []
 backProp _ [] _ error = []
 backProp _ _ [] error = []
-backProp (w:r_weights) (b:r_biases) (a:r_activations) error = (multStd (transpose (nrows act_error) 1 act_error) a, act_error) : backProp r_weights r_biases r_activations (multStd act_error w) 
+backProp (w:r_weights) (b:r_biases) (a:r_activations) error = (multStd (transpose act_error) a) : backProp r_weights r_biases r_activations (multStd act_error w) 
                                                                 where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
 
 backPropTest network input output = backProp (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output) where fp = forwardPass network input
@@ -106,6 +106,7 @@ backPropTest network input output = backProp (reverse $ weights network) (revers
 q = backPropTest (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0])
 -- ...
 
+t w a b error= (multStd a (transpose act_error)) where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
 
 -- |Helpers| --
 
@@ -118,8 +119,8 @@ q = backPropTest (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fro
 --                  where each field is r_ij = m_ij * n_ij
 
 mul :: Matrix Float -> Matrix Float -> Matrix Float
-mul m n = fromList (length listM) (length listN) (zipWith (*) listM listN)
-           where listM = toList m
-                 listN = toList n
+mul a b = fromList (nrows a) (ncols b) (zipWith (*) listM listN)
+           where listM = toList a
+                 listN = toList b
 
 -- | ---- | --
