@@ -98,7 +98,7 @@ reshape n m matrix = fromList n m $ toList matrix
 backProp [] _ _ error = []
 backProp _ [] _ error = []
 backProp _ _ [] error = []
-backProp (w:r_weights) (b:r_biases) (a:r_activations) error = (multStd (transpose act_error) a) : backProp r_weights r_biases r_activations (multStd act_error w) 
+backProp (w:r_weights) (b:r_biases) (a:r_activations) error = ((multStd act_error (transpose a)), act_error) : backProp r_weights r_biases r_activations (multStd (transpose act_error) w) -- ist das berechnen des nächsten fehlers richtig?
                                                                 where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
 
 backPropTest network input output = backProp (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output) where fp = forwardPass network input
@@ -106,7 +106,7 @@ backPropTest network input output = backProp (reverse $ weights network) (revers
 q = backPropTest (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0])
 -- ...
 
-t w a b error= (multStd a (transpose act_error)) where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
+t w a b error= (multStd (transpose act_error) a) where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
 
 -- |Helpers| --
 
