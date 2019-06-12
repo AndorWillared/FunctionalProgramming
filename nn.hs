@@ -98,7 +98,7 @@ reshape n m matrix = fromList n m $ toList matrix
 backProp [] _ _ error = []
 backProp _ [] _ error = []
 backProp _ _ [] error = []
-backProp (w:r_weights) (b:r_biases) (a:r_activations) error = (multStd (reshape (nrows act_error) 1 act_error) (reshape 1 (nrows a) a), act_error) : backProp r_weights r_biases r_activations (multStd act_error w) 
+backProp (w:r_weights) (b:r_biases) (a:r_activations) error = (multStd (transpose (nrows act_error) 1 act_error) a, act_error) : backProp r_weights r_biases r_activations (multStd act_error w) 
                                                                 where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
 
 backPropTest network input output = backProp (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output) where fp = forwardPass network input
