@@ -8,14 +8,26 @@ data NeuralNetwork = NeuralNetwork { weights::[Matrix Float], biases::[Matrix Fl
 -- current test-function
 
 main = do
-    let network = initializeNeuralNetwork [2,3,2]
+    let trainig_data = getTrainingData 1000
+    let network = initializeNeuralNetwork [2,3,1]
     print network
     print "-------------------"
     print (forwardPass network (fromList 2 1[2,1]))
+    let trained_network = train network trainig_data
+    input1 <- getLine
+    input2 <- getLine
+    let val1 = read input1 :: Float
+    let val2 = read input2 :: Float
+    print $ last $ forwardPass trained_network (fromList 2 1 [val1,val2])
 
 --________________________________________________________________________
 
-
+getTrainingData :: Int -> [(Matrix Float,Matrix Float)]
+getTrainingData n = [(getInput (mod x 4), getOutput (mod x 4)) | x<-[1..n]]
+getInput :: Int -> (Matrix Float)
+getInput x | x==0 = fromList 2 1 [0.0,0.0] | x==1 = fromList 2 1 [0.0,1.0] | x==2 = fromList 2 1 [1.0,0.0] | otherwise = fromList 2 1 [1.0,1.0]
+getOutput :: Int -> (Matrix Float)
+getOutput x | x==0 = fromList 1 1 [0.0] | x==1 = fromList 1 1 [0.0] | x==2 = fromList 1 1 [0.0] | otherwise = fromList 1 1 [1.0]
 -- || Main Functions || --
 
 -- takes list of Integers as an argument,
@@ -103,7 +115,7 @@ getUpdates (w:r_weights) (b:r_biases) (a:r_activations) error = ((multStd act_er
 
 getUpdatedValues [] _ _ = []
 getUpdatedValues _ [] _ = []
-getUpdatedValues (x:to_update) ((wU,bU):updates) is_bias = x + (if(is_bias) then bU else wU) : getUpdatedValues to_update updates is_bias
+getUpdatedValues (x:to_update) ((wU,bU):updates) is_bias = x - (if(is_bias) then bU else wU) : getUpdatedValues to_update updates is_bias
 
 applyUpdates network updates = NeuralNetwork (getUpdatedValues (weights network) updates False) (getUpdatedValues (biases network) updates True)
 
@@ -111,6 +123,8 @@ backprop network input output = applyUpdates network (reverse $ getUpdates (reve
 
 q = backprop (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0])
 
+train network [] = network
+train network ((input,output):trainig_data) = train (backprop network input output) trainig_data;
 -- ...
 
 -- |Helpers| --
