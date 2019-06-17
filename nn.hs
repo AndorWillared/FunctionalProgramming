@@ -34,13 +34,13 @@ predict :: NeuralNetwork -> [Char] -> IO [Char]
 predict net msg =     do
               putStrLn "Geben sie den Input ein, den das Netwzwerk verarbeiten soll (a AND b = ...) !"
               putStrLn "Geben sie Input a ein:"
-              input1 <- getChar
+              input1 <- getLine
               putStrLn " "
               putStrLn "Geben sie Input b ein:"
-              input2 <- getChar
+              input2 <- getLine
               putStrLn " "
-              let val1 = read [input1]:: Float
-              let val2 = read [input2] :: Float
+              let val1 = read input1:: Float
+              let val2 = read input2 :: Float
               let net_out =  last $ forwardPass net (fromList 2 1 [val1,val2])
               let net_percent = head $ toList net_out
 
@@ -52,10 +52,10 @@ predict net msg =     do
               putStrLn ("Das Netz ist sich mit dem Ergebnis zu " ++ (show $ diff*100) ++"% sicher")
 
               putStrLn "Erneute Eingabe ? (j/n)"
-              u_in <- getChar
-              let yon = u_in :: Char
+              u_in <- getLine
+              let yon = u_in :: [Char]
               putStrLn " "
-              if (yon == 'j') then (predict net msg) else return msg
+              if (yon == "j") then (predict net msg) else return msg
 
 
 --________________________________________________________________________
