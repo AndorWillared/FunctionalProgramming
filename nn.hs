@@ -1,7 +1,7 @@
 import Data.Matrix
 import System.Random
 import System.IO.Unsafe
-
+import PngToVector
 
 data NeuralNetwork = NeuralNetwork { weights::[Matrix Float], biases::[Matrix Float] } deriving Show
 
@@ -12,9 +12,10 @@ getTrainFactor :: Float -> Float
 getTrainFactor x   | x <= 0 = 1
                 | otherwise = x
 
-main = do
+{-
+main2 = do
     let trainig_data = getTrainingData 1000
-    let network = initializeNeuralNetwork [2,3,1]
+    let network = initializeNeuralNetwork [2,3,2]
     print network
     print "-------------------"
     print (forwardPass network (fromList 2 1[2,1]))
@@ -25,15 +26,22 @@ main = do
     let val1 = read input1 :: Float
     let val2 = read input2 :: Float
     print $ last $ forwardPass trained_network (fromList 2 1 [val1,val2])
+-}
+
+main = do
+    let nn = initializeNeuralNetwork [784,16,16,10]
+    print (show (predict nn pngToVector))
 
 --________________________________________________________________________
+
+predict network input = last (forwardPass network input)
 
 getTrainingData :: Int -> [(Matrix Float,Matrix Float)]
 getTrainingData n = [(getInput (mod x 4), getOutput (mod x 4)) | x<-[1..n]]
 getInput :: Int -> (Matrix Float)
 getInput x | x==0 = fromList 2 1 [0.0,0.0] | x==1 = fromList 2 1 [0.0,1.0] | x==2 = fromList 2 1 [1.0,0.0] | otherwise = fromList 2 1 [1.0,1.0]
 getOutput :: Int -> (Matrix Float)
-getOutput x | x==0 = fromList 1 1 [0.0] | x==1 = fromList 1 1 [0.0] | x==2 = fromList 1 1 [0.0] | otherwise = fromList 1 1 [1.0]
+getOutput x | x==0 = fromList 2 1 [1.0, 0.0] | x==1 = fromList 2 1 [1.0, 0.0] | x==2 = fromList 2 1 [1.0, 0.0] | otherwise = fromList 2 1 [0.0, 1.0]
 -- || Main Functions || --
 
 -- takes list of Integers as an argument,
