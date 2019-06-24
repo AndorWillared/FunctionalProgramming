@@ -1,7 +1,7 @@
 import Data.Matrix
 import System.Random
 import System.IO.Unsafe
-
+import PngToVector
 
 data NeuralNetwork = NeuralNetwork { weights::[Matrix Float], biases::[Matrix Float] } deriving Show
 
@@ -12,7 +12,8 @@ getTrainFactor :: Float -> Float
 getTrainFactor x   | x <= 0 = 1
                 | otherwise = x
 
-main = do
+{-
+main2 = do
     let trainig_data = getTrainingData 1000
     let network = initializeNeuralNetwork [2,3,2]
     print network
@@ -25,8 +26,15 @@ main = do
     let val1 = read input1 :: Float
     let val2 = read input2 :: Float
     print $ last $ forwardPass trained_network (fromList 2 1 [val1,val2])
+-}
+
+main = do
+    let nn = initializeNeuralNetwork [784,16,16,10]
+    print (show (predict nn pngToVector))
 
 --________________________________________________________________________
+
+predict network input = last (forwardPass network input)
 
 getTrainingData :: Int -> [(Matrix Float,Matrix Float)]
 getTrainingData n = [(getInput (mod x 4), getOutput (mod x 4)) | x<-[1..n]]
