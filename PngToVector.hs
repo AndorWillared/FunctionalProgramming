@@ -13,8 +13,8 @@ pngToVector = do
     fc <- BS.readFile input
     let image = (decodePng fc)
     case image of
-        Left err -> IO.putStrLn "ERROR"
-        Right msg -> IO.putStrLn (show(fromList 784 1 ([temp msg x y | x <- [0..27], y <- [0..27]])))
+        Left err -> return (fromList 1 1 [-1.0 :: Float])
+        Right msg -> return (fromList 784 1 ([temp msg x y | x <- [0..27], y <- [0..27]]))
 
 getR (PixelRGBA8 r g b a) = r
 

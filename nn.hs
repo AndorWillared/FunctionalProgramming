@@ -30,7 +30,8 @@ main2 = do
 
 main = do
     let nn = initializeNeuralNetwork [784,16,16,10]
-    print (show (predict nn pngToVector))
+    pic <- pngToVector
+    putStrLn $ show $  mapToResult $ predict nn pic
 
 --________________________________________________________________________
 
@@ -141,6 +142,17 @@ q = backprop (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromLis
 train network [] _ = network
 train network ((input,output):trainig_data) trainFactor = train (backprop network input output trainFactor) trainig_data trainFactor
 -- ...
+
+
+mapToResult :: Matrix Float -> (Float, Int)
+
+mapToResult m | len /= 10 = (0.0 ,(-1))     -- this is an error
+              | otherwise = maximum (zip matList [1..10])       -- this will work since maximum on tuples compares fst_s, then snd_s
+
+
+                where len = length $ matList
+                      matList = toList m
+
 
 -- |Helpers| --
 
