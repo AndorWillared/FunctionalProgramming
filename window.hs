@@ -18,11 +18,11 @@ main = do
         return False
 
     trainingButton <- builderGetObject builder castToButton "trainingButton"
-    -- trainingButton `on` EVENT-HERE $ do
+    -- trainingButton `on` buttonActivated $ do
 
 
     predictionButton <- builderGetObject builder castToButton "predictionButton"
-    -- predictionButton `on` EVENT-HERE $ do
+    -- predictionButton `on` buttonActivated $ do
 
     img <- builderGetObject builder castToImage "img"
 
@@ -42,5 +42,28 @@ main = do
                     pixbufNew <- pixbufScaleSimple pixbufOld 350 350 InterpBilinear
                     imageSetFromPixbuf img pixbufNew
 
+    settingsModal <- builderGetObject builder castToWindow "settingsModal"
+    windowSetPosition settingsModal WinPosCenterOnParent
+    windowSetKeepAbove settingsModal True
+    settingsModal `on` deleteEvent $ do -- emmited on delete event
+        return $ widgetHide settingsModal
+        return False
+        
+    modalSaveButton <- builderGetObject builder castToButton "modalSaveButton"
+    modalSaveButton `on` buttonActivated $ do
+        -- initialize network here --
+        widgetHide settingsModal
+
+    modalCancelButton <- builderGetObject builder castToButton "modalCancelButton"
+    modalCancelButton `on` buttonActivated $ do
+        widgetHide settingsModal
+
+    networkSettingsButton <- builderGetObject builder castToButton "networkSettingsButton"
+    networkSettingsButton `on` buttonActivated $ do
+        widgetShow modalCancelButton
+        widgetShow settingsModal
+
     widgetShowAll window
+    widgetShow settingsModal
+    widgetHide modalCancelButton
     mainGUI
