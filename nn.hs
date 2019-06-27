@@ -2,6 +2,7 @@ import Data.Matrix
 import System.Random
 import System.IO.Unsafe
 import PngToVector
+import Mnist_converter
 
 data NeuralNetwork = NeuralNetwork { weights::[Matrix Float], biases::[Matrix Float] } deriving Show
 
@@ -12,21 +13,43 @@ getTrainFactor :: Float -> Float
 getTrainFactor x   | x <= 0 = 1
                 | otherwise = x
 
-{-
 main2 = do
-    let trainig_data = getTrainingData 1000
-    let network = initializeNeuralNetwork [2,3,2]
-    print network
+    let network = initializeNeuralNetwork [784,16,16,10]
+--  print network
+    putStrLn "|| Initialisation finished"
+
     print "-------------------"
-    print (forwardPass network (fromList 2 1[2,1]))
-    let trainFactor = getTrainFactor 0.75
-    let trained_network = train network trainig_data trainFactor
-    input1 <- getLine
-    input2 <- getLine
-    let val1 = read input1 :: Float
-    let val2 = read input2 :: Float
-    print $ last $ forwardPass trained_network (fromList 2 1 [val1,val2])
--}
+
+    putStrLn "Enter train factor:"
+    t_in <- readLn
+    let t = t_in :: Float
+    let trainFactor = getTrainFactor t
+
+    putStrLn "Enter amount of training data :"
+    num_in <- readLn
+    let num = num_in :: Int
+    training_data <- convert_mnist_auto num
+
+    let transformed_td = map (\x -> ( fst x, numToOut $ snd x )) training_data   -- transforms generated training data to correct format (Matrix, Matrix)
+--  putStrLn $ show $ transformed_td
+
+    putStrLn "|| Configuration finished"
+
+    let trained_network = train network transformed_td trainFactor
+
+    putStrLn "Enter path to test picture:"
+    pic <- pngToVector
+
+    let prediction = predict trained_network pic    --get prediction from test pic  || ATTENTION: may take VERY long (lazy evaluation)
+    putStrLn $ show $  mapToResult $ prediction -- shows result (percent, number)
+    return prediction   -- return result vector for further testing (is sum ~ 1 ?)
+
+
+-- simple test function, to visualize sum of result vector
+
+tester res = sum ( toList res)
+
+ ----
 
 main = do
     let nn = initializeNeuralNetwork [784,16,16,10]
@@ -144,15 +167,31 @@ train network ((input,output):trainig_data) trainFactor = train (backprop networ
 -- ...
 
 
+-- convert a given result - Matrix to a Pair representing that result
+-- Matrix Float = result - Matrix
+-- (Float, Int) = Pair, where 'Float'= certainty of result, 'Int'= actual result
+
+
 mapToResult :: Matrix Float -> (Float, Int)
 
-mapToResult m | len /= 10 = (0.0 ,(-1))     -- this is an error
-              | otherwise = maximum (zip matList [1..10])       -- this will work since maximum on tuples compares fst_s, then snd_s
+mapToResult m | len /= 10 = (0.0 ,(-1))                        -- this is a user - error
+              | otherwise = maximum (zip matList [0..9])       -- this will work since maximum on tuples compares fst_s, then snd_s
 
 
                 where len = length $ matList
                       matList = toList m
 
+
+-- convert a number to standard out - layer format
+-- Int = num to convert
+-- Matrix Float = (Matrix Float, 10 1), representing 'Int'
+
+numToOut :: Int -> Matrix Float
+
+ -- ATTENTION only args 0 - 9 lead to sensible results
+
+numToOut int = fromList 10 1 list
+               where list = (replicate int 0.0) ++ [1.0] ++ (replicate (10 - 1 - int) 0.0)
 
 -- |Helpers| --
 
