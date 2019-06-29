@@ -30,7 +30,7 @@ mnist_to_matrixes :: String -> Int-> Int-> Int -> IO [Matrix Float]
 
 mnist_to_matrixes fileName count imgX imgY = do
                                              imgContent <- BS.readFile fileName
-                                             let imgs = unpack $ BS.take (imgX * imgY * count) $ BS.drop matDrop imgContent
+                                             let imgs = unpack $ BS.drop matDrop imgContent
                                              let float_imgs = ( P.map fromIntegral imgs) :: [Float]
                                              let matList = P.map (fromList (imgX*imgY) 1) (chunksOf (imgX * imgY) float_imgs)
                                              return matList
@@ -40,7 +40,7 @@ mnist_to_labellist :: String -> Int -> IO [Int]
 
 mnist_to_labellist fileName count = do
                                    labelContent <- BS.readFile fileName
-                                   let labels = unpack $ BS.take count $ BS.drop labelDrop labelContent
+                                   let labels = unpack $ BS.drop labelDrop labelContent
                                    let int_labels = P.map fromIntegral labels
                                    return int_labels
                                    where labelDrop = 8 -- drops 8 bytes of file info from start of labelFile
