@@ -13,7 +13,7 @@ getTrainFactor :: Float -> Float
 getTrainFactor x   | x <= 0 = 1
                 | otherwise = x
 
-main2 = do
+main = do
     let network = initializeNeuralNetwork [784,16,16,10]
 --  print network
     putStrLn "|| Initialisation finished"
@@ -35,12 +35,12 @@ main2 = do
 
     putStrLn "|| Configuration finished"
 
-    let trained_network = train network transformed_td trainFactor
+    trained_network <- train network transformed_td trainFactor
 
     putStrLn "Enter path to test picture:"
     pic <- pngToVector
 
-    let prediction = predict trained_network pic    --get prediction from test pic  || ATTENTION: may take VERY long (lazy evaluation)
+    prediction <- predict trained_network pic    --get prediction from test pic  || ATTENTION: may take VERY long (lazy evaluation)
     putStrLn $ show $  mapToResult $ prediction -- shows result (percent, number)
     return prediction   -- return result vector for further testing (is sum ~ 1 ?)
 
@@ -51,14 +51,16 @@ tester res = sum ( toList res)
 
  ----
 
-main = do
+main2 = do
     let nn = initializeNeuralNetwork [784,16,16,10]
     pic <- pngToVector
-    putStrLn $ show $  mapToResult $ predict nn pic
+    res <- predict nn pic
+    putStrLn $ show $  mapToResult $ res
 
 --________________________________________________________________________
 
-predict network input = last (forwardPass network input)
+predict network input = do
+                        return ( last (forwardPass network input))
 
 getTrainingData :: Int -> [(Matrix Float,Matrix Float)]
 getTrainingData n = [(getInput (mod x 4), getOutput (mod x 4)) | x<-[1..n]]
@@ -106,6 +108,8 @@ zeroMatrix n m = matrix n m $ \(i,j) -> 0.0
 
 sigmoid :: Float -> Float
 sigmoid x = 0.5 * (1 + tanh (x/2))
+
+sigmoid' :: Float -> Float
 sigmoid' x = sigmoid x * (1-sigmoid x)
 
 
@@ -135,7 +139,6 @@ forward (w:weights) (b:biases) activation = ergebnis : (forward weights biases e
 -- [Matrix Float]: list of activation - matrixes (after completed forward pass9
 
 forwardPass network input = input : forward (weights network) (biases network) input
-
 -- || ------------------------------ ||--
 
 
@@ -158,12 +161,18 @@ getUpdatedValues (x:to_update) ((wU,bU):updates) is_bias trainFactor = x - fmap 
 
 applyUpdates network updates trainFactor = NeuralNetwork (getUpdatedValues (weights network) updates False trainFactor) (getUpdatedValues (biases network) updates True trainFactor)
 
-backprop network input output trainFactor = applyUpdates network (reverse $ getUpdates (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output)) trainFactor where fp = forwardPass network input
+backprop network input output trainFactor = do
+                                            let desiredNum = snd $ mapToResult $ output  -- expected value
+                                            let err = 1 - ((toList (last fp)) !! desiredNum)
+                                            putStrLn $ (show err)
+                                            return (applyUpdates network (reverse $ getUpdates (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) ((last fp) - output )) trainFactor)
+                                            where fp = forwardPass network input
 
-q = backprop (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0]) 0.1
+train network [] _ = return network
+train network ((input,output):trainig_data) trainFactor = do
+                                                          b_res <- backprop network input output trainFactor
+                                                          train b_res trainig_data trainFactor
 
-train network [] _ = network
-train network ((input,output):trainig_data) trainFactor = train (backprop network input output trainFactor) trainig_data trainFactor
 -- ...
 
 

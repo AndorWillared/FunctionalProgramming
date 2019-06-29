@@ -9,6 +9,7 @@ import Data.List.Split
 
 convert_mnist_auto size = mnist_to_trainData "mnist/train-images" "mnist/train-labels" size 28 28    -- max size is 60000
 
+convert_minst' size = mnist_to_trainData "mnist/t10k-images-idx3-ubyte" "mnist/t10k-labels.idx1-ubyte" size 28 28
 
 type TrainData = (Matrix Float, Int)
 
