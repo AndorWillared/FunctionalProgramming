@@ -23,11 +23,6 @@
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
-  <object class="GtkImage" id="settingsImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-properties</property>
-  </object>
   <object class="GtkApplicationWindow" id="settingsModal">
     <property name="can_focus">False</property>
     <property name="modal">True</property>
@@ -200,6 +195,11 @@
       </object>
     </child>
   </object>
+  <object class="GtkImage" id="settingsImage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-properties</property>
+  </object>
   <object class="GtkAdjustment" id="trainFactorValueAdjustment">
     <property name="lower">0.01</property>
     <property name="upper">1</property>
@@ -245,6 +245,18 @@
             <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="predictionLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Hier steht der Prediction-Text</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child>

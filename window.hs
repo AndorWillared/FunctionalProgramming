@@ -63,7 +63,14 @@ main = do
         widgetShow modalCancelButton
         widgetShow settingsModal
 
+    hiddenNodeCountSelector <- builderGetObject builder castToSpinButton "hiddenNodeCountSelector"
+    hiddenNodeCountSelector `afterValueSpinned` (do
+            putStrLn "wow"
+            -- when spinButtonGetValue hiddenNodeCountSelector == 2 $ putStrLn "wow"
+        )
+
     widgetShowAll window
     widgetShow settingsModal
     widgetHide modalCancelButton
     mainGUI
+
