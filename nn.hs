@@ -162,8 +162,8 @@ getUpdatedValues (x:to_update) ((wU,bU):updates) is_bias trainFactor = x - fmap 
 applyUpdates network updates trainFactor = NeuralNetwork (getUpdatedValues (weights network) updates False trainFactor) (getUpdatedValues (biases network) updates True trainFactor)
 
 backprop network input output trainFactor = do
-                                            let desiredNum = snd $ mapToResult $ output  -- expected value
-                                            let err = 1 - ((toList (last fp)) !! desiredNum)
+                                            let vec = (output - (last fp))  -- expected value
+                                            let err = sum $ toList (fmap (^2) vec)
                                             putStrLn $ (show err)
                                             return (applyUpdates network (reverse $ getUpdates (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) ((last fp) - output )) trainFactor)
                                             where fp = forwardPass network input
