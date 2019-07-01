@@ -63,14 +63,33 @@ main = do
         widgetShow modalCancelButton
         widgetShow settingsModal
 
+    hiddenNodeDetailBox <- builderGetObject builder castToBox "hiddenNodeDetailBox"
+
     hiddenNodeCountSelector <- builderGetObject builder castToSpinButton "hiddenNodeCountSelector"
     hiddenNodeCountSelector `afterValueSpinned` (do
-            putStrLn "wow"
-            -- when spinButtonGetValue hiddenNodeCountSelector == 2 $ putStrLn "wow"
+            spinButtonValue <- spinButtonGetValue hiddenNodeCountSelector
+            -- delete old buttons
+            oldButtons <- containerGetChildren hiddenNodeDetailBox
+            -- remove old buttons
+            -- return $ fmap (\button -> containerRemove hiddenNodeDetailBox button) oldButtons 
+            putStrLn $ show $ spinButtonValue
+            -- putStrLn $ show $ length oldButtons
+            -- widgetDestroy hiddenNodeDetailBox
+            -- hiddenNodeDetailBox <- vBoxNew
+            -- testText <- entryNew
+            -- entrySetText testText "TestText"
+            -- boxPackStart hiddenNodeDetailBox testText PackNatural 0
+            sequence $ fmap (\button -> widgetDestroy button) oldButtons -- LAZY EVALUATION, WIRD NICHT AUSGEFÜHRT
+            -- sequence makes spinButtonList from type "[IO SpinButton]" to type "IO [SpinButton]"
+            -- spinButtonList is of type "[SpinButton]"
+            spinButtonList <- sequence [ spinButtonNewWithRange 1 1000 1 | x <- [1..spinButtonValue] ]
+            -- for each spin button, add it to the hiddenNodeDetailBox
+            forM_ spinButtonList (\button -> boxPackStart hiddenNodeDetailBox button PackNatural 0) -- LAZY EVALUATION, WIRD NICHT AUSGEFÜHRT
+            widgetShowAll hiddenNodeDetailBox 
+            return ()
         )
 
     widgetShowAll window
     widgetShow settingsModal
     widgetHide modalCancelButton
     mainGUI
-
