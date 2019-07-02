@@ -42,6 +42,35 @@ main = do
                     pixbufNew <- pixbufScaleSimple pixbufOld 350 350 InterpBilinear
                     imageSetFromPixbuf img pixbufNew
 
+    hiddenNodeLayout <- builderGetObject builder castToScrolledWindow "hiddenNodeLayout"
+    hiddenNodeDetailBox <- vBoxNew False 5
+    scrolledWindowAddWithViewport hiddenNodeLayout hiddenNodeDetailBox
+
+    inputNodeCountSelector <- builderGetObject builder castToSpinButton "inputNodeCountSelector"
+    hiddenNodeCountSelector <- builderGetObject builder castToSpinButton "hiddenNodeCountSelector"
+    outputNodeCountSelector <- builderGetObject builder castToSpinButton "outputNodeCountSelector"
+    hiddenNodeCountSelector `afterValueSpinned` (do
+            -- get spinButton value
+            spinButtonValue <- spinButtonGetValueAsInt hiddenNodeCountSelector
+            -- get all widgets (all old buttons)
+            oldButtons <- containerGetChildren hiddenNodeDetailBox
+            -- remove old buttons
+            sequence $ fmap (\button -> widgetDestroy button) oldButtons -- LAZY EVALUATION, WIRD NICHT AUSGEFÜHRT
+            -- generate new buttons
+            spinButtonList <- sequence [ spinButtonNewWithRange 1 1000 1 | x <- [1..spinButtonValue] ]
+            -- for each spin button, add it to the hiddenNodeLayout
+            forM_ spinButtonList (\button -> boxPackStart hiddenNodeDetailBox button PackNatural 0) -- LAZY EVALUATION, WIRD NICHT AUSGEFÜHRT
+            -- show all widgets
+            widgetShowAll hiddenNodeDetailBox
+        )
+
+    -- initialize some input fields for the hiddenNodeDetailBox
+    do 
+        spinButtonValue <- spinButtonGetValueAsInt hiddenNodeCountSelector
+        spinButtonList <- sequence [ spinButtonNewWithRange 1 1000 1 | x <- [1..spinButtonValue] ]
+        forM_ spinButtonList (\button -> boxPackStart hiddenNodeDetailBox button PackNatural 0)
+        widgetShowAll hiddenNodeDetailBox
+
     settingsModal <- builderGetObject builder castToWindow "settingsModal"
     windowSetPosition settingsModal WinPosCenterOnParent
     windowSetKeepAbove settingsModal True
@@ -52,6 +81,14 @@ main = do
     modalSaveButton <- builderGetObject builder castToButton "modalSaveButton"
     modalSaveButton `on` buttonActivated $ do
         -- initialize network here --
+        -- retrieve values from all spinButtons --
+        spinButtonsOfHiddenLayer <- containerGetChildren hiddenNodeDetailBox
+        inputNodes <- spinButtonGetValueAsInt inputNodeCountSelector
+        hiddenLayerNodes <- sequence [ spinButtonGetValueAsInt (castToSpinButton (spinButtonsOfHiddenLayer!!(x-1))) | x <- [1..(length spinButtonsOfHiddenLayer)] ]
+        outputNodes <- spinButtonGetValueAsInt outputNodeCountSelector
+        let networkInitializationList = [inputNodes] ++ hiddenLayerNodes ++ [outputNodes]
+        putStrLn $ "networkInitializationList: " ++ (show networkInitializationList)
+        -- INITIALIZE NETWORK WITH networkInitializationList -- 
         widgetHide settingsModal
 
     modalCancelButton <- builderGetObject builder castToButton "modalCancelButton"
@@ -63,31 +100,11 @@ main = do
         widgetShow modalCancelButton
         widgetShow settingsModal
 
-    hiddenNodeDetailBox <- builderGetObject builder castToBox "hiddenNodeDetailBox"
-
-    hiddenNodeCountSelector <- builderGetObject builder castToSpinButton "hiddenNodeCountSelector"
-    hiddenNodeCountSelector `afterValueSpinned` (do
-            spinButtonValue <- spinButtonGetValue hiddenNodeCountSelector
-            -- delete old buttons
-            oldButtons <- containerGetChildren hiddenNodeDetailBox
-            -- remove old buttons
-            -- return $ fmap (\button -> containerRemove hiddenNodeDetailBox button) oldButtons 
-            putStrLn $ show $ spinButtonValue
-            -- putStrLn $ show $ length oldButtons
-            -- widgetDestroy hiddenNodeDetailBox
-            -- hiddenNodeDetailBox <- vBoxNew
-            -- testText <- entryNew
-            -- entrySetText testText "TestText"
-            -- boxPackStart hiddenNodeDetailBox testText PackNatural 0
-            sequence $ fmap (\button -> widgetDestroy button) oldButtons -- LAZY EVALUATION, WIRD NICHT AUSGEFÜHRT
-            -- sequence makes spinButtonList from type "[IO SpinButton]" to type "IO [SpinButton]"
-            -- spinButtonList is of type "[SpinButton]"
-            spinButtonList <- sequence [ spinButtonNewWithRange 1 1000 1 | x <- [1..spinButtonValue] ]
-            -- for each spin button, add it to the hiddenNodeDetailBox
-            forM_ spinButtonList (\button -> boxPackStart hiddenNodeDetailBox button PackNatural 0) -- LAZY EVALUATION, WIRD NICHT AUSGEFÜHRT
-            widgetShowAll hiddenNodeDetailBox 
-            return ()
-        )
+    paintWindowButton <- builderGetObject builder castToButton "paintWindowButton"
+    paintWindowButton `on` buttonActivated $ do
+        -- OPEN PAINT WINDOW HERE --
+        -- widgetShow paintWindow
+        return () -- this line can be deleted later
 
     widgetShowAll window
     widgetShow settingsModal

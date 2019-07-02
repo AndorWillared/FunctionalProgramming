@@ -5,7 +5,7 @@
   <object class="GtkAdjustment" id="hiddenLayerNodeCountAdjustment">
     <property name="lower">1</property>
     <property name="upper">1000000000000000</property>
-    <property name="value">10</property>
+    <property name="value">3</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
@@ -89,7 +89,7 @@
                 <property name="text" translatable="yes">100</property>
                 <property name="adjustment">hiddenLayerNodeCountAdjustment</property>
                 <property name="climb_rate">1</property>
-                <property name="value">10</property>
+                <property name="value">3</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -169,7 +169,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="hiddenNodeDetailBox">
+          <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
@@ -186,13 +186,16 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkScrolledWindow" id="hiddenNodeLayout">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">TEST</property>
+                <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <placeholder/>
+                </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
@@ -208,6 +211,11 @@
     </child>
   </object>
   <object class="GtkImage" id="settingsImage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-properties</property>
+  </object>
+  <object class="GtkImage" id="settingsImage1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-properties</property>
@@ -319,7 +327,7 @@
             </child>
             <child>
               <object class="GtkButton" id="trainingButton">
-                <property name="label" translatable="yes">trainieren</property>
+                <property name="label" translatable="yes">Training</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -358,6 +366,21 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="paintWindowButton">
+                <property name="label" translatable="yes">Bild zeichnen</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="hexpand">True</property>
+                <property name="image">settingsImage1</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">6</property>
               </packing>
             </child>
           </object>
