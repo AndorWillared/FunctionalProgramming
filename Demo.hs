@@ -12,5 +12,5 @@ main = do
 
 demo = do
         let nn = createNeuralNetwork [784, 16, 16, 10]
-        trainingSamples <- getTrainingSamples
+        trainingSamples <- getTrainingSamplesN 5000
         return (train nn trainingSamples 0.1)

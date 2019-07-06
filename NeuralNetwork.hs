@@ -38,24 +38,14 @@ backprop network input output learningRate = applyUpdates network (reverse (getG
                                               where activations = forwardPass network input
 
 applyUpdates :: NeuralNetwork -> [(Matrix Float,Matrix Float)] -> Float -> NeuralNetwork
-applyUpdates network updates learningRate = NeuralNetwork (getUpdatedWeights (weights network) (fst (unzip updates)) learningRate) (getUpdatedBiases (biases network) (snd (unzip updates)) learningRate)
+applyUpdates network updates learningRate = NeuralNetwork (getUpdated (weights network) (fst (unzip updates)) learningRate) (getUpdated (biases network) (snd (unzip updates)) learningRate)
 
-getUpdatedWeights :: [Matrix Float] -> [Matrix Float] -> Float -> [Matrix Float]
-getUpdatedWeights [] _ _ = []
-getUpdatedWeights _ [] _ = []
-getUpdatedWeights (w:weights) (wu:weight_updates) learningRate = w - fmap (*learningRate) wu : getUpdatedWeights weights weight_updates learningRate
-
-getUpdatedBiases :: [Matrix Float] -> [Matrix Float] -> Float -> [Matrix Float]
-getUpdatedBiases [] _ _ = []
-getUpdatedBiases _ [] _ = []
-getUpdatedBiases (b:biases) (bu:biasUpdates) learningRate = b - fmap (*learningRate) bu : getUpdatedBiases biases biasUpdates learningRate
+getUpdated :: [Matrix Float] -> [Matrix Float] -> Float -> [Matrix Float]
+getUpdated list updates learningRate =  zipWith (\l u -> l - fmap (*learningRate) u) list updates
 
 getGradients :: [Matrix Float] -> [Matrix Float] -> [Matrix Float] -> Matrix Float -> [(Matrix Float, Matrix Float)]
-getGradients [] _ _ _ = []
-getGradients _ [] _ _ = []
-getGradients _ _ [] _ = []
-getGradients (w:rWeights) (b:rBiases) (a:rActivations) error = (multStd error2 (transpose a), error2) : getGradients rWeights rBiases rActivations (multStd (transpose w) error2)
-                                                                where error2 = (multiplyElementwise error (fmap sigmoid' ((multStd w a) + b)))
+getGradients rWeights rBiases rActivations error = zipWith  (\e a ->  (multStd e (transpose a), e) ) errors rActivations
+                                                   where errors = zipWith3 (\w b a ->(multiplyElementwise error (fmap sigmoid' ((multStd w a) + b)))) rWeights rBiases rActivations
 
 multiplyElementwise :: Matrix Float -> Matrix Float -> Matrix Float
 multiplyElementwise a b = fromList (nrows a) (ncols b) (zipWith (*) listA listB)
