@@ -7,7 +7,7 @@ main = do
         path <- getLine
         pic <- pngToVector path
         let res =  mapToResult $ predict net pic
-        putStrLn ("The result is: " ++ show (snd res) ++ "with a confidence of " ++ show (fst res ))
+        return res
 
 
 demo = do
