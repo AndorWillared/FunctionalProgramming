@@ -12,7 +12,7 @@
   <object class="GtkAdjustment" id="inputNodeCountAdjustment">
     <property name="lower">1</property>
     <property name="upper">1000000000000000</property>
-    <property name="value">728</property>
+    <property name="value">784</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
@@ -62,7 +62,7 @@
                 <property name="text" translatable="yes">100</property>
                 <property name="adjustment">inputNodeCountAdjustment</property>
                 <property name="climb_rate">1</property>
-                <property name="value">728</property>
+                <property name="value">784</property>
               </object>
               <packing>
                 <property name="expand">False</property>

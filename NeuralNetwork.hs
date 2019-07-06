@@ -67,3 +67,10 @@ sigmoid x = 1 / (1 + exp (-x))
 
 sigmoid' :: Float -> Float
 sigmoid' x = (sigmoid x) * (1 - (sigmoid x))
+
+
+mapToResult :: Matrix Float -> (Float, Int)
+mapToResult m | l /= 10 = (0.0 ,(-1))                        -- this is a user - error
+              | otherwise = maximum (zip matList [0..9])       -- this will work since maximum on tuples compares fst_s, then snd_s
+                where l = length $ matList
+                      matList = toList m

@@ -11,14 +11,14 @@ import Codec.Picture.Png
 
 getTrainingSamples :: IO [(Matrix Float, Matrix Float)]
 getTrainingSamples = do
-                      images <- parseImages "train-images.idx3-ubyte"
-                      labels <- parseLabels "train-labels.idx1-ubyte"
+                      images <- parseImages "data/train-images"
+                      labels <- parseLabels "data/train-labels"
                       return (zip images labels)
 
 getTestSamples :: IO [(Matrix Float, Matrix Float)]
 getTestSamples = do
-                  images <- parseImages "t10k-images.idx3-ubyte"
-                  labels <- parseLabels "t10k-labels.idx1-ubyte"
+                  images <- parseImages "data/test-images"
+                  labels <- parseLabels "data/test-labels"
                   return (zip images labels)
 
 parseLabels :: String -> IO [Matrix Float]
@@ -34,7 +34,7 @@ parseImages path = do
                         temp <- B.readFile path
                         return (map (fmap (/255)) (map (fromList 784 1) (chunksOf 784 (map fromIntegral (B.unpack (B.drop 16 temp))))))
 
---pngToVector :: String -> IO Matrix Float
+pngToVector :: String -> IO (Matrix Float)
 pngToVector path = do
     fc <- B.readFile path
     let image = (decodePng fc)

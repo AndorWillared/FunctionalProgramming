@@ -2,13 +2,13 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Data.IORef
 import Graphics.UI.Gtk hiding (Action, backspace)
-
+import NeuralNetwork
+import MNIST
 -- glade file already contains much logic implementation when it comes to
 -- restricting user input within the user interface
 
 main = do
     void initGUI       
-    
     builder <- builderNew
     builderAddFromFile builder "fp_projekt_window.glade"
 
@@ -17,12 +17,34 @@ main = do
         liftIO mainQuit
         return False
 
-    trainingButton <- builderGetObject builder castToButton "trainingButton"
-    -- trainingButton `on` buttonActivated $ do
+    gnn <- newIORef (createNeuralNetwork [])
+    netConfigured <- newIORef False
+    netTrained <- newIORef False
+    imagePath <- newIORef ""
+    imageSet <- newIORef False
 
+    trainFactorSelector <- builderGetObject builder castToSpinButton "trainFactorSelector"
+    
+    trainingButton <- builderGetObject builder castToButton "trainingButton"
+    trainingButton `on` buttonActivated $ do
+        localNN <- liftIO $ (readIORef gnn)
+        learningRate <- spinButtonGetValue trainFactorSelector
+        trainingSamples <- getTrainingSamples
+        let trainedNN = train localNN trainingSamples (realToFrac learningRate)
+        liftIO $ writeIORef gnn trainedNN
+        return ()
+
+    predictionLabel <- builderGetObject builder castToLabel "predictionLabel"    
 
     predictionButton <- builderGetObject builder castToButton "predictionButton"
-    -- predictionButton `on` buttonActivated $ do
+    predictionButton `on` buttonActivated $ do
+        localNN <- liftIO $ (readIORef gnn)
+        temp <- readIORef imagePath
+        imageMatrix <- pngToVector temp
+        let prediction = predict localNN imageMatrix
+        let res = mapToResult prediction
+        liftIO (putStrLn ("Sicherheit: " ++ show (fst res) ++ " Wert: " ++ show (snd res)))
+        liftIO $ labelSetLabel predictionLabel ("Sicherheit: " ++ show (fst res) ++ " Wert: " ++ show (snd res))
 
     img <- builderGetObject builder castToImage "img"
 
@@ -41,6 +63,9 @@ main = do
                     pixbufOld <- imageGetPixbuf img
                     pixbufNew <- pixbufScaleSimple pixbufOld 350 350 InterpBilinear
                     imageSetFromPixbuf img pixbufNew
+                    -- TODO: check if image has correct size
+                    liftIO $ writeIORef imagePath fpath    
+                    liftIO $ writeIORef imageSet True 
 
     hiddenNodeLayout <- builderGetObject builder castToScrolledWindow "hiddenNodeLayout"
     hiddenNodeDetailBox <- vBoxNew False 5
@@ -87,7 +112,9 @@ main = do
         hiddenLayerNodes <- sequence [ spinButtonGetValueAsInt (castToSpinButton (spinButtonsOfHiddenLayer!!(x-1))) | x <- [1..(length spinButtonsOfHiddenLayer)] ]
         outputNodes <- spinButtonGetValueAsInt outputNodeCountSelector
         let networkInitializationList = [inputNodes] ++ hiddenLayerNodes ++ [outputNodes]
-        putStrLn $ "networkInitializationList: " ++ (show networkInitializationList)
+        --putStrLn $ "networkInitializationList: " ++ (show networkInitializationList)
+        liftIO $ writeIORef gnn (createNeuralNetwork networkInitializationList)
+        liftIO $ writeIORef netConfigured True
         -- INITIALIZE NETWORK WITH networkInitializationList -- 
         widgetHide settingsModal
 
