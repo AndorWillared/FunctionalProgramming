@@ -3,6 +3,8 @@ module NeuralNetwork where
 import Data.Matrix
 import System.Random
 import System.IO.Unsafe
+import qualified Data.Binary
+import qualified Data.ByteString.Lazy
 
 data NeuralNetwork = NeuralNetwork { weights::[Matrix Float], biases::[Matrix Float] }
 
