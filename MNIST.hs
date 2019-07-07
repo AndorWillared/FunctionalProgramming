@@ -21,22 +21,10 @@ getTestSamples = do
                   labels <- parseLabels "data/test-labels"
                   return (zip images labels)
 
-getTrainingSamplesN :: Int ->  IO [(Matrix Float, Matrix Float)]
-getTrainingSamplesN n = do
-                    imgs <- parseImagesN "data/train-images" n
-                    lbls <- parseLabelsN  "data/train-labels" n
-                    return (zip imgs lbls)
-
 parseLabels :: String -> IO [Matrix Float]
 parseLabels path = do
                         temp <- B.readFile path
                         return (map (fromList 10 1) (map toCategorical (map fromIntegral (B.unpack (B.drop 8 temp)))))
-
-parseLabelsN :: String -> Int -> IO [Matrix Float]
-parseLabelsN path n = do
-                        temp <- B.readFile path
-                        return (map (fromList 10 1) (map toCategorical (map fromIntegral (B.unpack (B.take n $ B.drop 8 temp)))))
-
 
 toCategorical :: Int -> [Float]
 toCategorical index = [if i == index then 1 else 0 | i <- [0..9]]
@@ -45,11 +33,6 @@ parseImages :: String -> IO [Matrix Float]
 parseImages path = do
                         temp <- B.readFile path
                         return (map (fmap (/255)) (map (fromList 784 1) (chunksOf 784 (map fromIntegral (B.unpack (B.drop 16 temp))))))
-
-parseImagesN :: String -> Int -> IO [Matrix Float]
-parseImagesN path n = do
-                        temp <- B.readFile path
-                        return (map (fmap (/255)) (map (fromList 784 1) (chunksOf 784 (map fromIntegral (B.unpack (B.take (28*28*n) $ B.drop 16 temp))))))
 
 pngToVector :: String -> IO (Matrix Float)
 pngToVector path = do
