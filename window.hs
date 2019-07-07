@@ -2,7 +2,7 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Data.IORef
 import Graphics.UI.Gtk hiding (Action, backspace)
-import NeuralNetwork
+import NN
 import MNIST
 -- glade file already contains much logic implementation when it comes to
 -- restricting user input within the user interface
@@ -19,32 +19,34 @@ main = do
 
     gnn <- newIORef (createNeuralNetwork [])
     netConfigured <- newIORef False
-    netTrained <- newIORef False
     imagePath <- newIORef ""
     imageSet <- newIORef False
 
+    statusLabel <- builderGetObject builder castToLabel "statusLabel"
     trainFactorSelector <- builderGetObject builder castToSpinButton "trainFactorSelector"
-    
+
     trainingButton <- builderGetObject builder castToButton "trainingButton"
     trainingButton `on` buttonActivated $ do
         localNN <- liftIO $ (readIORef gnn)
         learningRate <- spinButtonGetValue trainFactorSelector
         trainingSamples <- getTrainingSamples
-        let trainedNN = train localNN trainingSamples (realToFrac learningRate)
+        trainedNN <- trainVerbose localNN trainingSamples (realToFrac learningRate)
         liftIO $ writeIORef gnn trainedNN
+        liftIO $ labelSetLabel statusLabel "Status: trainiert"
         return ()
 
-    predictionLabel <- builderGetObject builder castToLabel "predictionLabel"    
+    predictionLabel <- builderGetObject builder castToLabel "predictionLabel"
 
     predictionButton <- builderGetObject builder castToButton "predictionButton"
     predictionButton `on` buttonActivated $ do
         localNN <- liftIO $ (readIORef gnn)
+        localImgS <- liftIO $ (readIORef imageSet)
         temp <- readIORef imagePath
-        imageMatrix <- pngToVector temp
-        let prediction = predict localNN imageMatrix
-        let res = mapToResult prediction
-        liftIO (putStrLn ("Sicherheit: " ++ show (fst res) ++ " Wert: " ++ show (snd res)))
-        liftIO $ labelSetLabel predictionLabel ("Sicherheit: " ++ show (fst res) ++ " Wert: " ++ show (snd res))
+        if localImgS then do imageMatrix <- pngToVector temp
+                             let prediction = predict localNN imageMatrix
+                             let res = mapToResult prediction
+                             liftIO $ labelSetLabel predictionLabel ("Sicherheit: " ++ show (fst res) ++ " Wert: " ++ show (snd res))
+                     else putStrLn  "Bitte Bild wählen !"  --TODO: POPUP einfügen
 
     img <- builderGetObject builder castToImage "img"
 
@@ -115,6 +117,7 @@ main = do
         --putStrLn $ "networkInitializationList: " ++ (show networkInitializationList)
         liftIO $ writeIORef gnn (createNeuralNetwork networkInitializationList)
         liftIO $ writeIORef netConfigured True
+        liftIO $ labelSetLabel statusLabel "Status: untrainiert"
         -- INITIALIZE NETWORK WITH networkInitializationList -- 
         widgetHide settingsModal
 
