@@ -62,7 +62,7 @@ data NeuralNetwork =
     NeuralNetwork { config::[Int], 
                     weights::[Matrix Float] ,  
                     biases::[Matrix Float] 
-                  }   
+                  }
 
 instance Binary NeuralNetwork where
   put (NeuralNetwork config weights biases) = do
