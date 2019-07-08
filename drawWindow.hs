@@ -12,6 +12,7 @@ import Data.Map
 import Data.Matrix as M
 import qualified Data.Vector as V 
 import Codec.Picture.Png
+import Codec.Picture.Types
 
 backgroundColor :: RGB Double
 backgroundColor = hsv 0.0 0.0 0.0
@@ -93,9 +94,6 @@ convert' value = 1 + (value `quot` 12)
 
 generateMap width height = replicate height . replicate width
 
-type Pixel = (Int,Int)
-type Map   = [Pixel]
-
 main' :: Bool -> IO ()
 main' test =
   do
@@ -160,6 +158,14 @@ main' test =
     G.widgetShow vBox
     G.widgetShow window
     G.mainGUI
+
+
+getPixel :: Int -> Int -> M.Matrix Int -> Pixel8
+getPixel x y matrix = (fromIntegral(M.getElem x y matrix))
+
+imageCreator :: String -> M.Matrix Int -> IO()
+imageCreator path matrix = writePng path $ generateImage pixelRenderer 28 28
+      where pixelRenderer x y = PixelRGB8 (fromIntegral x) (fromIntegral y)  (getPixel x y matrix)
 
 -- vectorToPng :: V.Vector (PixelBaseComponent PixelRGBA8) -> IO ()
 vectorToPng pixels = do
