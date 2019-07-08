@@ -10,7 +10,7 @@ import System.Random.Shuffle
 import Prelude hiding (zip,zipWith,zipWith3,unzip)
 import Data.Zip
 
-data NeuralNetwork = NeuralNetwork { config::[Int] , weights::[Matrix Float] , biases::[Matrix Float] }
+data NeuralNetwork = !NeuralNetwork { config::[Int] , weights::[Matrix Float] , biases::[Matrix Float] }
 
 instance Binary NeuralNetwork where
   put (NeuralNetwork config weights biases) = do
