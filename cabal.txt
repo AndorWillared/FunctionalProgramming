@@ -5,3 +5,4 @@ JuicyPixels-util
 random
 random-shuffle
 extra
+TypeCompose
