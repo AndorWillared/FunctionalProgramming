@@ -2,29 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="60d66e25-f2ad-4d42-a4c1-bb19783b5439" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Mnist_converter.hs" beforeDir="false" afterPath="$PROJECT_DIR$/MNIST.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PngToVector.hs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnist/5_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnist/t10k-images-idx3-ubyte" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnist/t10k-images-idx3-ubyte.gz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnist/t10k-labels-idx1-ubyte.gz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnist/train-images" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mnist/train-labels" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nn" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nn - Kopie.hs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nn.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nn.hi" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nn.hs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nn.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/2_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/6.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/samples/9.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/10_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/1_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/3_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/4_9.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/5_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/6_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/7_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/8_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/9_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Demo.hs" beforeDir="false" afterPath="$PROJECT_DIR$/Demo.hs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MNIST.hs" beforeDir="false" afterPath="$PROJECT_DIR$/MNIST.hs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NeuralNetwork.hs" beforeDir="false" afterPath="$PROJECT_DIR$/NeuralNetwork.hs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,12 +24,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="false">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/NeuralNetwork.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="520">
-              <caret line="20" column="56" selection-start-line="20" selection-start-column="56" selection-end-line="20" selection-end-column="56" />
+            <state relative-caret-position="1280">
+              <caret line="120" column="19" selection-start-line="120" selection-start-column="19" selection-end-line="120" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -46,17 +37,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MNIST.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="9" column="24" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Demo.hs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="7" column="20" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
+            <state relative-caret-position="-1">
+              <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
             </state>
           </provider>
         </entry>
@@ -65,13 +47,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>trainFactor</find>
-      <find>trainFac</find>
-      <find>forward</find>
       <find>mnist_to_label</find>
       <find>BS</find>
       <find>Int</find>
       <find>filename</find>
+      <find>+1</find>
+      <find>temp</find>
+      <find>z</find>
+      <find>temp1</find>
+      <find>z2</find>
+      <find>network</find>
+      <find>trainFactor</find>
+      <find>trainVerbose2</find>
+      <find>getUpdated</find>
+      <find>getGradients</find>
+      <find>forwardPass</find>
+      <find>total_error</find>
+      <find>training_iterations</find>
+      <find>totalError</find>
+      <find>split</find>
+      <find>trainingData</find>
+      <find>forward</find>
+      <find>trainVerbose</find>
+      <find>backpropVerbose</find>
+      <find>stringToFloat</find>
+      <find>IO</find>
+      <find>toCategorical</find>
+      <find>fromList</find>
+      <find>backprop</find>
+      <find>apply</find>
+      <find>update</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -81,23 +86,28 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Mnist_converter.hs" />
-        <option value="$PROJECT_DIR$/NeuralNetwork.hs" />
-        <option value="$PROJECT_DIR$/MNIST.hs" />
+        <option value="$PROJECT_DIR$/Test.hs" />
+        <option value="$PROJECT_DIR$/test.txt" />
+        <option value="$PROJECT_DIR$/NeuralNetwork2.hs" />
         <option value="$PROJECT_DIR$/Demo.hs" />
+        <option value="$PROJECT_DIR$/MNIST.hs" />
+        <option value="$PROJECT_DIR$/NeuralNetwork.hs" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-11" />
-    <option name="y" value="-11" />
-    <option name="width" value="3863" />
-    <option name="height" value="2123" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="-12" />
+    <option name="y" value="-12" />
+    <option name="width" value="1944" />
+    <option name="height" value="1044" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -109,14 +119,13 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1561853946569" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1562603193083" />
+    <property name="jdk.selected.JAVA_MODULE" value="1.8" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -124,6 +133,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Felix\Desktop\Neural-Network-Haskell2" />
       <recent name="C:\Users\Felix\Desktop\Neural-Network-Haskell" />
     </key>
   </component>
@@ -150,76 +160,93 @@
       <option name="presentableId" value="Default" />
       <updated>1561841889051</updated>
       <workItem from="1561841890344" duration="12044000" />
+      <workItem from="1562348923536" duration="19092000" />
+      <workItem from="1562418467492" duration="11493000" />
+      <workItem from="1562437381538" duration="11451000" />
+      <workItem from="1562586901254" duration="28000" />
+      <workItem from="1562586966316" duration="8120000" />
+      <workItem from="1562596547840" duration="4623000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="12044000" />
+    <option name="totallyTimeSpent" value="66851000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="2575" height="1415" extended-state="6" />
+    <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Image Layers" />
-      <window_info id="Designer" />
-      <window_info id="UI Designer" />
-      <window_info id="Capture Tool" />
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12246521" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Database Changes" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4991119" visible="true" weight="0.15870446" />
+      <window_info id="Structure" order="1" sideWeight="0.5008881" side_tool="true" weight="0.1562753" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32969603" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="Palette" />
-      <window_info anchor="right" id="Theme Preview" />
-      <window_info anchor="right" id="Maven" />
-      <window_info anchor="right" id="Capture Analysis" />
-      <window_info anchor="right" id="Palette&#9;" />
-      <window_info anchor="right" id="SciView" />
-      <window_info anchor="right" id="Database" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32969603" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.3285968" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Theme Preview" order="4" />
+      <window_info anchor="right" id="Maven" order="5" />
+      <window_info anchor="right" id="Capture Analysis" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="SciView" order="8" />
+      <window_info anchor="right" id="Database" order="9" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/PngToVector.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="16" selection-start-column="16" selection-end-column="16" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/PngToVector.hs" />
+    <entry file="file://$PROJECT_DIR$/Test.hs" />
+    <entry file="file://$PROJECT_DIR$/test.txt" />
+    <entry file="file://$PROJECT_DIR$/Mnist_converter.hs" />
+    <entry file="file://$PROJECT_DIR$/NeuralNetwork2.hs" />
+    <entry file="file://$PROJECT_DIR$/cabal.txt">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/NeuralNetwork.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="20" column="56" selection-start-line="20" selection-start-column="56" selection-end-line="20" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/mnist" />
     <entry file="file://$PROJECT_DIR$/MNIST.hs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="9" column="24" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
+        <state relative-caret-position="-1">
+          <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Demo.hs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="7" column="20" selection-start-line="7" selection-start-column="20" selection-end-line="7" selection-end-column="20" />
+        <state relative-caret-position="21">
+          <caret line="1" column="12" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/NeuralNetwork.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1280">
+          <caret line="120" column="19" selection-start-line="120" selection-start-column="19" selection-end-line="120" selection-end-column="19" />
         </state>
       </provider>
     </entry>

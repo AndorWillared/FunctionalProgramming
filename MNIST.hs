@@ -1,4 +1,4 @@
-module MNIST where
+module MNIST (getTrainingSamples, getTestSamples, pngToVector) where
 
 import System.IO
 import qualified Data.ByteString as B
@@ -9,39 +9,43 @@ import Codec.Picture.Types
 import Codec.Picture.RGBA8
 import Codec.Picture.Png
 
-getTrainingSamples :: IO [(Matrix Float, Matrix Float)]
+getTrainingSamples :: IO ([(Matrix Float, Matrix Float)])
 getTrainingSamples = do
-                      images <- parseImages "train-images.idx3-ubyte"
-                      labels <- parseLabels "train-labels.idx1-ubyte"
-                      return (zip images labels)
+  images <- parseImages "train-images.idx3-ubyte"
+  labels <- parseLabels "train-labels.idx1-ubyte"
+  return (zip images labels)
 
-getTestSamples :: IO [(Matrix Float, Matrix Float)]
+getTestSamples :: IO ([(Matrix Float, Matrix Float)])
 getTestSamples = do
-                  images <- parseImages "t10k-images.idx3-ubyte"
-                  labels <- parseLabels "t10k-labels.idx1-ubyte"
-                  return (zip images labels)
+  images <- parseImages "t10k-images.idx3-ubyte"
+  labels <- parseLabels "t10k-labels.idx1-ubyte"
+  return (zip images labels)
 
-parseLabels :: String -> IO [Matrix Float]
+parseLabels :: FilePath -> IO ([Matrix Float])
 parseLabels path = do
-                        temp <- B.readFile path
-                        return (map (fromList 10 1) (map toCategorical (map fromIntegral (B.unpack (B.drop 8 temp)))))
+  labels <- B.readFile path
+  return (map (fromList 10 1) (map toCategorical10 (map fromIntegral (B.unpack (B.drop 8 labels)))))
 
-toCategorical :: Int -> [Float]
-toCategorical index = [if i == index then 1 else 0 | i <- [0..9]]
-
-parseImages :: String -> IO [Matrix Float]
+parseImages :: FilePath -> IO ([Matrix Float])
 parseImages path = do
-                        temp <- B.readFile path
-                        return (map (fmap (/255)) (map (fromList 784 1) (chunksOf 784 (map fromIntegral (B.unpack (B.drop 16 temp))))))
+  images <- B.readFile path
+  return (map (fmap (/255)) (map (fromList 784 1) (chunksOf 784 (map fromIntegral (B.unpack (B.drop 16 images))))))
 
---pngToVector :: String -> IO Matrix Float
+pngToVector :: FilePath -> IO (Matrix Float)
 pngToVector path = do
-    fc <- B.readFile path
-    let image = (decodePng fc)
-    case image of
-        Left err -> return (fromList 1 1 [-1.0 :: Float])
-        Right msg -> return (fromList 784 1 ([temp msg x y | x <- [0..27], y <- [0..27]]))
+  pngData <- B.readFile path
+  let decodedPng = decodePng pngData
+  case decodedPng of
+    Left err -> error (show err)
+    Right succ -> return (fromList 784 1 (map fromIntegral ([redChannelAt (fromDynamicImage succ) x y | x <- [0..27], y <- [0..27]])))
 
-getR (PixelRGBA8 r g b a) = r
+-- Helper
 
-temp msg x y = (fromIntegral (getR (pixelAt (fromDynamicImage msg) x y)))
+toCategorical10 :: Int -> [Float]
+toCategorical10 label = [if i == label then 1 else 0 | i <- [0..9]]
+
+redChannelAt :: Image PixelRGBA8 -> Int -> Int -> Int
+redChannelAt image x y = redChannel (pixelAt image x y)
+
+redChannel :: PixelRGBA8 -> Int
+redChannel (PixelRGBA8 r g b a) = fromIntegral r
