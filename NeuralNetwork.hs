@@ -1,4 +1,42 @@
-module NeuralNetwork where
+{-|
+Module      : NeuralNetwork
+Description : A haskell implementation of a neural network
+License     : MIT
+Maintainer  : andor.willared@mni.thm.de
+Stability   : experimental
+
+A naive haskell neural-network implementation
+-}
+
+module NeuralNetwork (
+  -- * DataType
+  NeuralNetwork,
+  -- * Initialisiation
+  createNeuralNetwork,
+  -- * Prediction
+  predict,
+  -- * Training
+  forwardPass,
+  train,
+  train',
+  BackpropResult,
+  update,
+  gradients,
+  -- * Serializiation
+  serialize,
+  serialize2,
+  deserialize,
+  deserialize2,
+  -- * Helper functions
+  sigmoid,
+  sigmoid',
+  randomRMatrix,
+  zeroMatrix,
+  multiplyElementwise,
+  shuffleSamples,
+  argmax,
+  toCategorical,
+  ) where
 
 import Data.Matrix
 import System.Random
@@ -10,14 +48,26 @@ import System.Random.Shuffle
 import Prelude hiding (zip,zipWith,zipWith3,unzip)
 import Data.Zip
 
-data NeuralNetwork = !NeuralNetwork { config::[Int] , weights::[Matrix Float] , biases::[Matrix Float] }
+-- | The data type 'NeuralNetwork' represents the state of a network.
+--
+-- It contains:
+-- 
+-- - config (nodes per layer) as a list of 'Int' 
+-- - weights as 'Matrix' of 'Float' 
+-- - biases as 'Matrix' of 'Float' 
+
+data NeuralNetwork = 
+    NeuralNetwork { config::[Int], 
+                    weights::[Matrix Float] ,  
+                    biases::[Matrix Float] 
+                  }
 
 instance Binary NeuralNetwork where
   put (NeuralNetwork config weights biases) = do
     put config
     put $ fmap toList weights
     put $ fmap toList biases
-
+    
   get = do
     config <- get
     rawWeights <- get
@@ -26,14 +76,31 @@ instance Binary NeuralNetwork where
     let biases = [fromList (config!!i) 1 (rawBiases!!(i-1)) | i <- [1..((length config)-1)]]
     return (NeuralNetwork config weights biases)
 
-createNeuralNetwork :: [Int] -> NeuralNetwork
-createNeuralNetwork config = NeuralNetwork
-  config
-  [randomRMatrix (config!!(i+1)) (config!!i) (-1.0,1.0) | i <- [0..((length config)-2)]]
-  [zeroMatrix (config!!i) 1 | i <- [1..((length config)-1)]]
 
-predict :: NeuralNetwork -> Matrix Float -> Matrix Float
+-- | The function 'createNeuralNetwork' creates a randomly initialised network with the specified layers
+--
+-- __For example:__ 
+-- 
+-- A network with 784 input-nodes, 2 hidden layers with 1000 nodes each and 10 output-nodes 
+-- 
+-- @> createNeuralNetwork [784,1000,1000,10]@
+createNeuralNetwork :: [Int]            -- ^ List of Nodes per Layer
+                    -> NeuralNetwork
+                 
+createNeuralNetwork config = NeuralNetwork
+  config 
+  [randomRMatrix (config!!(i+1)) (config!!i) range | i <- [0..((length config)-2)]]
+  [zeroMatrix (config!!i) 1 | i <- [1..((length config)-1)]] 
+  where range = (-1.0,1.0)
+
+-- | 'predict' takes an network and a fitting input and runs a forwardPass with these parameters. 
+-- The resulting output 'Matrix' is returned
+predict :: NeuralNetwork 
+        -> Matrix Float 
+        -> Matrix Float
+        
 predict nn input = last (forwardPass nn input)
+
 
 forwardPass :: NeuralNetwork -> Matrix Float -> [Matrix Float]
 forwardPass nn input = input : forwardPass' (weights nn) (biases nn) input
@@ -53,14 +120,14 @@ train' nn' ((input, output):samples) learningRate totalError' trainingIterations
   backpropR <- (backprop nn' input output learningRate totalError' trainingIterations')
   train' (nn backpropR) samples learningRate (totalError backpropR) (totalIterations backpropR)
 
-data BackpropR = BackpropR { nn :: NeuralNetwork , totalError :: Float , totalIterations :: Int }
+data BackpropResult = BackpropResult { nn :: NeuralNetwork , totalError :: Float , totalIterations :: Int }
 
-backprop :: NeuralNetwork -> Matrix Float -> Matrix Float -> Float -> Float -> Int -> IO (BackpropR)
+backprop :: NeuralNetwork -> Matrix Float -> Matrix Float -> Float -> Float -> Int -> IO (BackpropResult)
 backprop nn input output learningRate totalError totalIterations = do
   let err = 0.5 * (sum $ toList (fmap (^2) ((last activations) - output)))
   let updatedNN = apply nn (reverse (gradients (reverse (weights nn)) (reverse (biases nn)) (reverse (init activations)) ((last activations) - output))) learningRate
   putStrLn ((show (totalIterations + 1)) ++ ": " ++ show ((totalError + err)/(fromIntegral (totalIterations + 1))))
-  return (BackpropR updatedNN (totalError + err) (totalIterations + 1))
+  return (BackpropResult updatedNN (totalError + err) (totalIterations + 1))
   where activations = forwardPass nn input
 
 apply :: NeuralNetwork -> [(Matrix Float,Matrix Float)] -> Float -> NeuralNetwork
@@ -107,14 +174,7 @@ deserialize2 path = do
   let biases = [ fromList (config!!(i+1)) 1 (take ((config!!(i+1))) (drop (sum [ (config!!(j+1)) | j <- [0..i-1]]) bstart)) | i <- [0..((length config)-2)] ]
   return (NeuralNetwork config weights biases)
 
-shuffleSamples :: [(Matrix Float, Matrix Float)] -> Int -> [(Matrix Float, Matrix Float)]
-shuffleSamples samples seed = shuffle' samples (length samples) (mkStdGen seed)
 
-argmax :: Matrix Float -> Int
-argmax matrix = snd (maximum (zip (toList matrix) [0..(length (toList matrix))]))
-
-toCategorical :: Int -> Int -> [Float]
-toCategorical label classes = [if i == label then 1 else 0 | i <- [0..classes-1]]
 
 test :: NeuralNetwork -> [(Matrix Float, Matrix Float)] -> IO ()
 test _ [] = putStrLn ""
@@ -128,6 +188,14 @@ test nn (s:samples) = do
                     test nn samples
 
 -- Helper
+shuffleSamples :: [(Matrix Float, Matrix Float)] -> Int -> [(Matrix Float, Matrix Float)]
+shuffleSamples samples seed = shuffle' samples (length samples) (mkStdGen seed)
+
+argmax :: Matrix Float -> Int
+argmax matrix = snd (maximum (zip (toList matrix) [0..(length (toList matrix))]))
+
+toCategorical :: Int -> Int -> [Float]
+toCategorical label classes = [if i == label then 1 else 0 | i <- [0..classes-1]]
 
 randomRMatrix :: Int -> Int -> (Float, Float) -> Matrix Float
 randomRMatrix rows columns range = matrix rows columns (\(i, j) -> unsafePerformIO (getStdRandom (randomR range)))
