@@ -2,19 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="60d66e25-f2ad-4d42-a4c1-bb19783b5439" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/10_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/1_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/2_4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/3_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/4_9.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/5_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/6_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/7_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/8_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/9_4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Demo.hs" beforeDir="false" afterPath="$PROJECT_DIR$/Demo.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MNIST.hs" beforeDir="false" afterPath="$PROJECT_DIR$/MNIST.hs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NeuralNetwork.hs" beforeDir="false" afterPath="$PROJECT_DIR$/NeuralNetwork.hs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -28,8 +15,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/NeuralNetwork.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1280">
-              <caret line="120" column="19" selection-start-line="120" selection-start-column="19" selection-end-line="120" selection-end-column="19" />
+            <state relative-caret-position="272">
+              <caret line="65" column="40" selection-start-line="65" selection-start-column="40" selection-end-line="65" selection-end-column="40" />
             </state>
           </provider>
         </entry>
@@ -37,7 +24,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MNIST.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1">
+            <state relative-caret-position="13">
               <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
             </state>
           </provider>
@@ -47,7 +34,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>mnist_to_label</find>
       <find>BS</find>
       <find>Int</find>
       <find>filename</find>
@@ -77,6 +63,7 @@
       <find>backprop</find>
       <find>apply</find>
       <find>update</find>
+      <find>reverse</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -95,7 +82,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-12" />
     <option name="y" value="-12" />
     <option name="width" value="1944" />
@@ -124,7 +111,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1562603193083" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1562610145241" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
@@ -165,12 +152,12 @@
       <workItem from="1562437381538" duration="11451000" />
       <workItem from="1562586901254" duration="28000" />
       <workItem from="1562586966316" duration="8120000" />
-      <workItem from="1562596547840" duration="4623000" />
+      <workItem from="1562596547840" duration="6972000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="66851000" />
+    <option name="totallyTimeSpent" value="69200000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -229,13 +216,6 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/mnist" />
-    <entry file="file://$PROJECT_DIR$/MNIST.hs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1">
-          <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Demo.hs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="21">
@@ -243,10 +223,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/MNIST.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="13">
+          <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/NeuralNetwork.hs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1280">
-          <caret line="120" column="19" selection-start-line="120" selection-start-column="19" selection-end-line="120" selection-end-column="19" />
+        <state relative-caret-position="272">
+          <caret line="65" column="40" selection-start-line="65" selection-start-column="40" selection-end-line="65" selection-end-column="40" />
         </state>
       </provider>
     </entry>
