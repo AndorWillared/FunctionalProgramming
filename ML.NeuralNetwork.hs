@@ -8,45 +8,31 @@ Stability   : experimental
 A naive haskell neural-network implementation
 -}
 
-module NeuralNetwork (
+module ML.NeuralNetwork (
   -- * DataType
   NeuralNetwork,
+  config,
+  weights,
+  biases,
   -- * Initialisiation
   createNeuralNetwork,
   -- * Prediction
   predict,
   -- * Training
-  forwardPass,
   train,
-  train',
-  BackpropResult,
-  update,
-  gradients,
   -- * Serializiation
   serialize,
-  serialize2,
   deserialize,
+  serialize2,
   deserialize2,
-  -- * Helper functions
-  sigmoid,
-  sigmoid',
-  randomRMatrix,
-  zeroMatrix,
-  multiplyElementwise,
-  shuffleSamples,
-  argmax,
-  toCategorical,
   ) where
 
 import Data.Matrix
 import System.Random
-import System.IO.Unsafe
 import qualified Data.ByteString.Lazy as BSL
 import Data.Binary
 import Data.List.Split
 import System.Random.Shuffle
-import Prelude hiding (zip,zipWith,zipWith3,unzip)
-import Data.Zip
 
 -- | The data type 'NeuralNetwork' represents the state of a network.
 --
@@ -56,11 +42,7 @@ import Data.Zip
 -- - weights as 'Matrix' of 'Float' 
 -- - biases as 'Matrix' of 'Float' 
 
-data NeuralNetwork = 
-    NeuralNetwork { config::[Int], 
-                    weights::[Matrix Float] ,  
-                    biases::[Matrix Float] 
-                  }
+data NeuralNetwork = NeuralNetwork { config::[Int], weights::[Matrix Float], biases::[Matrix Float] }
 
 instance Binary NeuralNetwork where
   put (NeuralNetwork config weights biases) = do
@@ -76,7 +58,6 @@ instance Binary NeuralNetwork where
     let biases = [fromList (config!!i) 1 (rawBiases!!(i-1)) | i <- [1..((length config)-1)]]
     return (NeuralNetwork config weights biases)
 
-
 -- | The function 'createNeuralNetwork' creates a randomly initialised network with the specified layers
 --
 -- __For example:__ 
@@ -85,13 +66,13 @@ instance Binary NeuralNetwork where
 -- 
 -- @> createNeuralNetwork [784,1000,1000,10]@
 createNeuralNetwork :: [Int]            -- ^ List of Nodes per Layer
-                    -> NeuralNetwork
-                 
-createNeuralNetwork config = NeuralNetwork
-  config 
-  [randomRMatrix (config!!(i+1)) (config!!i) range | i <- [0..((length config)-2)]]
-  [zeroMatrix (config!!i) 1 | i <- [1..((length config)-1)]] 
-  where range = (-1.0,1.0)
+                    -> Int
+                    -> IO (NeuralNetwork)
+
+createNeuralNetwork config seed = do
+  weights <- sequence [ randomRMatrix (config!!(i+1)) (config!!i) (-1.0, 1.0) seed | i <- [0..((length config)-2)] ]
+  let biases = [zeroMatrix (config!!i) 1 | i <- [1..((length config)-1)]]
+  return (NeuralNetwork config weights biases)
 
 -- | 'predict' takes an network and a fitting input and runs a forwardPass with these parameters. 
 -- The resulting output 'Matrix' is returned
@@ -101,7 +82,6 @@ predict :: NeuralNetwork
         
 predict nn input = last (forwardPass nn input)
 
-
 forwardPass :: NeuralNetwork -> Matrix Float -> [Matrix Float]
 forwardPass nn input = input : forwardPass' (weights nn) (biases nn) input
 
@@ -109,7 +89,7 @@ forwardPass' :: [Matrix Float] -> [Matrix Float] -> Matrix Float -> [Matrix Floa
 forwardPass' [] _ activation = []
 forwardPass' _ [] activation = []
 forwardPass' (w:weights) (b:biases) activation = nextActivation : forwardPass' weights biases nextActivation
-                                                  where nextActivation = fmap sigmoid ((multStd w activation) + b)
+  where nextActivation = fmap sigmoid ((multStd w activation) + b)
 
 train :: NeuralNetwork -> [(Matrix Float, Matrix Float)] -> Float -> IO (NeuralNetwork)
 train nn ((input, output):samples) learningRate = train' nn samples learningRate 0 0
@@ -128,7 +108,7 @@ backprop nn input output learningRate totalError totalIterations = do
   let updatedNN = apply nn (reverse (gradients (reverse (weights nn)) (reverse (biases nn)) (reverse (init activations)) ((last activations) - output))) learningRate
   putStrLn ((show (totalIterations + 1)) ++ ": " ++ show ((totalError + err)/(fromIntegral (totalIterations + 1))))
   return (BackpropResult updatedNN (totalError + err) (totalIterations + 1))
-  where activations = forwardPass nn input
+    where activations = forwardPass nn input
 
 apply :: NeuralNetwork -> [(Matrix Float,Matrix Float)] -> Float -> NeuralNetwork
 apply nn updates learningRate = NeuralNetwork (config nn) (update (weights nn) (fst (unzip updates)) learningRate) (update (biases nn) (snd (unzip updates)) learningRate)
@@ -143,8 +123,19 @@ gradients [] _ _ _ = []
 gradients _ [] _ _ = []
 gradients _ _ [] _ = []
 gradients (w:weights) (b:biases) (a:activations) error = (multStd error' (transpose a), error') : gradients weights biases activations error''
-                                                            where error' = multiplyElementwise error (fmap sigmoid' ((multStd w a) + (b)))
-                                                                  error'' = multStd (transpose w) error'
+  where error' = multiplyElementwise error (fmap sigmoid' ((multStd w a) + (b)))
+        error'' = multStd (transpose w) error'
+
+--test :: NeuralNetwork -> [(Matrix Float, Matrix Float)] -> IO ()
+--test _ [] = putStrLn ""
+--test nn (s:samples) = do
+--                    let prediction = argmax (predict nn (fst s))
+--                    let label = argmax (snd s)
+--                    if prediction == label then
+--                      putStrLn "right"
+--                    else
+--                      putStrLn "wrong"
+--                    test nn samples
 
 serialize :: NeuralNetwork -> FilePath -> IO ()
 serialize nn path = do
@@ -174,41 +165,20 @@ deserialize2 path = do
   let biases = [ fromList (config!!(i+1)) 1 (take ((config!!(i+1))) (drop (sum [ (config!!(j+1)) | j <- [0..i-1]]) bstart)) | i <- [0..((length config)-2)] ]
   return (NeuralNetwork config weights biases)
 
-
-
-test :: NeuralNetwork -> [(Matrix Float, Matrix Float)] -> IO ()
-test _ [] = putStrLn ""
-test nn (s:samples) = do
-                    let prediction = argmax (predict nn (fst s))
-                    let label = argmax (snd s)
-                    if prediction == label then
-                      putStrLn "right"
-                    else
-                      putStrLn "wrong"
-                    test nn samples
-
 -- Helper
-shuffleSamples :: [(Matrix Float, Matrix Float)] -> Int -> [(Matrix Float, Matrix Float)]
-shuffleSamples samples seed = shuffle' samples (length samples) (mkStdGen seed)
 
-argmax :: Matrix Float -> Int
-argmax matrix = snd (maximum (zip (toList matrix) [0..(length (toList matrix))]))
-
-toCategorical :: Int -> Int -> [Float]
-toCategorical label classes = [if i == label then 1 else 0 | i <- [0..classes-1]]
-
-randomRMatrix :: Int -> Int -> (Float, Float) -> Matrix Float
-randomRMatrix rows columns range = matrix rows columns (\(i, j) -> unsafePerformIO (getStdRandom (randomR range)))
+randomRMatrix :: Int -> Int -> (Float, Float) -> Int -> IO (Matrix Float)
+randomRMatrix rows columns range seed = do
+                                    let weights = randomRs range (mkStdGen seed)
+                                    return (matrix rows columns (\(row, column) -> weights!!(column+row*columns)))
 
 zeroMatrix :: Int -> Int -> Matrix Float
 zeroMatrix rows columns = matrix rows columns (\(i, j) -> 0.0)
 
 multiplyElementwise :: Matrix Float -> Matrix Float -> Matrix Float
 multiplyElementwise m1 m2 = fromList (nrows m1) (ncols m2) (zipWith (*) m1List m2List)
-                              where m1List = toList m1
-                                    m2List = toList m2
-
---multiplyElementwise m1 m2 = (zipWith (*) [m1] [m2])!!0
+  where m1List = toList m1
+        m2List = toList m2
 
 sigmoid :: Float -> Float
 sigmoid x = 1 / (1 + exp (-x))

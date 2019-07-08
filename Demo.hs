@@ -1,2 +1,0 @@
-import NeuralNetwork
-import MNIST
