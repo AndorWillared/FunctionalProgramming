@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="60d66e25-f2ad-4d42-a4c1-bb19783b5439" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/ML-NeuralNetwork.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NeuralNetwork.hi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NeuralNetwork.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NeuralNetwork.o" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc-index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/haddock-bundle.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hslogo-16.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/meta.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/minus.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ocean.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/plus.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/quick-jump.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/synopsis.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NeuralNetwork.hs" beforeDir="false" afterPath="$PROJECT_DIR$/NeuralNetwork.hs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cabal.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cabal.txt" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/NeuralNetwork.hs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="168">
+              <caret line="62" column="19" selection-start-line="62" selection-start-column="19" selection-end-line="62" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MNIST.hs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="13">
+              <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>BS</find>
+      <find>Int</find>
+      <find>filename</find>
+      <find>+1</find>
+      <find>temp</find>
+      <find>z</find>
+      <find>temp1</find>
+      <find>z2</find>
+      <find>network</find>
+      <find>trainFactor</find>
+      <find>trainVerbose2</find>
+      <find>getUpdated</find>
+      <find>getGradients</find>
+      <find>forwardPass</find>
+      <find>total_error</find>
+      <find>training_iterations</find>
+      <find>totalError</find>
+      <find>split</find>
+      <find>trainingData</find>
+      <find>forward</find>
+      <find>trainVerbose</find>
+      <find>backpropVerbose</find>
+      <find>stringToFloat</find>
+      <find>IO</find>
+      <find>toCategorical</find>
+      <find>fromList</find>
+      <find>backprop</find>
+      <find>apply</find>
+      <find>update</find>
+      <find>reverse</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Mnist_converter.hs" />
+        <option value="$PROJECT_DIR$/Test.hs" />
+        <option value="$PROJECT_DIR$/test.txt" />
+        <option value="$PROJECT_DIR$/NeuralNetwork2.hs" />
+        <option value="$PROJECT_DIR$/Demo.hs" />
+        <option value="$PROJECT_DIR$/MNIST.hs" />
+        <option value="$PROJECT_DIR$/NeuralNetwork.hs" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-12" />
+    <option name="y" value="-12" />
+    <option name="width" value="1944" />
+    <option name="height" value="1044" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Neural-Network-Haskell" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Neural-Network-Haskell" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1562612757100" />
+    <property name="jdk.selected.JAVA_MODULE" value="1.8" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Felix\Desktop\Neural-Network-Haskell2" />
+      <recent name="C:\Users\Felix\Desktop\Neural-Network-Haskell" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="60d66e25-f2ad-4d42-a4c1-bb19783b5439" name="Default Changelist" comment="" />
+      <created>1561841889051</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1561841889051</updated>
+      <workItem from="1561841890344" duration="12044000" />
+      <workItem from="1562348923536" duration="19092000" />
+      <workItem from="1562418467492" duration="11493000" />
+      <workItem from="1562437381538" duration="11451000" />
+      <workItem from="1562586901254" duration="28000" />
+      <workItem from="1562586966316" duration="8120000" />
+      <workItem from="1562596547840" duration="8538000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="70766000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4991119" visible="true" weight="0.15870446" />
+      <window_info id="Structure" order="1" sideWeight="0.5008881" side_tool="true" weight="0.1562753" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32969603" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32969603" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Database Changes" order="9" />
+      <window_info anchor="bottom" id="Terminal" order="10" visible="true" weight="0.3285968" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Theme Preview" order="4" />
+      <window_info anchor="right" id="Maven" order="5" />
+      <window_info anchor="right" id="Capture Analysis" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="right" id="SciView" order="8" />
+      <window_info anchor="right" id="Database" order="9" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/PngToVector.hs" />
+    <entry file="file://$PROJECT_DIR$/Test.hs" />
+    <entry file="file://$PROJECT_DIR$/test.txt" />
+    <entry file="file://$PROJECT_DIR$/Mnist_converter.hs" />
+    <entry file="file://$PROJECT_DIR$/NeuralNetwork2.hs" />
+    <entry file="file://$PROJECT_DIR$/cabal.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mnist" />
+    <entry file="file://$PROJECT_DIR$/Demo.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="21">
+          <caret line="1" column="12" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MNIST.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="13">
+          <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/NeuralNetwork.hs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="62" column="19" selection-start-line="62" selection-start-column="19" selection-end-line="62" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
