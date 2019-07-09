@@ -4,6 +4,7 @@ import Data.IORef
 import Graphics.UI.Gtk hiding (Action, backspace)
 import NeuralNetwork
 import MNIST
+import Util
 
 -- glade file already contains much logic implementation when it comes to
 -- restricting user input within the user interface
@@ -25,7 +26,8 @@ main = do
         labelSetLabel alertLabel ""
         widgetHide alertWindow
 
-    gnn <- newIORef (createNeuralNetwork [])
+    net <- (createNeuralNetwork [] 101)
+    gnn <- newIORef net
     netConfigured <- newIORef False
     imagePath <- newIORef ""
     imageSet <- newIORef False
@@ -120,13 +122,11 @@ main = do
     modalTrainInitializeButton `on` buttonActivated $ do
         widgetHide settingsModal
         labelSetLabel statusLabel "Status: Training läuft..."
-        putStrLn "DEBUG1"
-        putStrLn "DEBUG2"
         labelSetLabel statusLabel "Status: Training beendet."
         
         spinButtonsOfHiddenLayer <- containerGetChildren hiddenNodeDetailBox
         hiddenLayerNodes <- sequence [ spinButtonGetValueAsInt (castToSpinButton (spinButtonsOfHiddenLayer!!(x-1))) | x <- [1..(length spinButtonsOfHiddenLayer)] ]
-        let net = createNeuralNetwork $ [784]++ hiddenLayerNodes ++[10]
+        net <- createNeuralNetwork ([784]++ hiddenLayerNodes ++[10]) 42
         learningRate <- spinButtonGetValue trainFactorSelector
         trainingSamples <- getTrainingSamples
         trainedNet <- train net trainingSamples (realToFrac learningRate)
@@ -135,8 +135,12 @@ main = do
 
     modalTrainLoadButton <- builderGetObject builder castToButton "modalTrainLoadButton"
     modalTrainLoadButton `on` buttonActivated $ do
+        -- TODO: pfad aus filechooser holen
+        let path = "trained_nets/binary"
+        loadedNet <- deserialize path
+        labelSetLabel statusLabel "Status: Netz geladen."
+        writeIORef gnn loadedNet
         widgetHide settingsModal
-        -- TODO: implement logic
 
     modalExitButton1 <- builderGetObject builder castToButton "modalExitButton1"
     modalExitButton1 `on` buttonActivated $ do
