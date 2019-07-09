@@ -18,18 +18,49 @@ window_height = matrix_width * tile_size
 placeholder = "aasdf"
 -- constants_end 
 
-drawCoordianteSpot :: Double -> Int -> Int -> C.Render ()
-drawCoordianteSpot rgb i j =
+first :: (a,a,b) -> a
+first (val,_,_) = val
+second :: (a,a,b) -> a
+second (_,val,_) = val
+third :: (a,a,b) -> b
+third (_,_,val) = val
+
+checkAdjacent :: Int -> Int -> Bool
+checkAdjacent x y =
+  if x >= 1 && x <= matrix_width && y >= 1 && y <= matrix_height
+    then
+      True
+    else 
+      False
+
+getAdjacent :: Int -> Int -> Double -> [(Int,Int,Double)]
+getAdjacent x y c = [ (xs,ys,(c + c / 2)) | xs <- [(x-1),(x+1)], ys <- [(y-1),(y+1)], checkAdjacent xs ys]
+
+drawCoordinateSpot :: Double -> Int -> Int -> C.Render ()
+drawCoordinateSpot rgb i j =
   do
     C.rectangle (fromIntegral (tile_size*i + 1)) (fromIntegral(tile_size * j + 1)) tile_size_sub_1 tile_size_sub_1
     C.setSourceRGB rgb rgb rgb
     C.fill
 
+drawCoordinateSpots :: Double -> Int -> Int -> C.Render ()
+drawCoordinateSpots rgb i j =
+  do
+    -- draw one spot
+    drawCoordinateSpot rgb i j
+    -- draw surrounding spots
+    if rgb > 0
+      then
+        forM_ (getAdjacent i j rgb) $ \adj -> do
+          drawCoordinateSpot (third adj) (first adj) (second adj)
+      else
+        return ()
+
 drawCoordinates :: M.Matrix Int -> C.Render ()
 drawCoordinates m =
   forM_ [0..(matrix_height-1)] $ \y -> do 
     forM_ [0..(matrix_width-1)] $ \x -> do
-      drawCoordianteSpot (fromIntegral (M.getElem (x+1) (y+1) m)) x y
+      drawCoordinateSpots (fromIntegral (M.getElem (x+1) (y+1) m)) x y
 
 destroyEventHandler :: IO ()
 destroyEventHandler =
