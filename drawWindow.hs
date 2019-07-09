@@ -1,126 +1,172 @@
-import qualified Graphics.UI.Gtk as G
-import Graphics.Rendering.Cairo
+import Graphics.UI.Gtk
+import qualified Graphics.Rendering.Cairo as C
 import Data.IORef
 import Control.Monad.State
 import Data.Matrix as M
 import Codec.Picture.Png
 import Codec.Picture.Types
+import Data.Text
 
-drawCoordianteSpot :: Double -> Int -> Int -> Render ()
+-- constants_begin
+matrix_width = 28
+matrix_height = 28
+tile_size = 24
+tile_size_sub_1 = 23.0
+least_opacity = 255
+window_width = matrix_width * tile_size + 200
+window_height = matrix_width * tile_size
+placeholder = "aasdf"
+-- constants_end 
+
+drawCoordianteSpot :: Double -> Int -> Int -> C.Render ()
 drawCoordianteSpot rgb i j =
   do
-    rectangle (fromIntegral (12*i + 1)) (fromIntegral(12 * j + 1)) 11.0 11.0
-    setSourceRGB rgb rgb rgb
-    fill
+    C.rectangle (fromIntegral (tile_size*i + 1)) (fromIntegral(tile_size * j + 1)) tile_size_sub_1 tile_size_sub_1
+    C.setSourceRGB rgb rgb rgb
+    C.fill
 
-drawCoordinates :: M.Matrix Int -> Render ()
+drawCoordinates :: M.Matrix Int -> C.Render ()
 drawCoordinates m =
-  forM_ [0..27] $ \y -> do 
-    forM_ [0..27] $ \x -> do
+  forM_ [0..(matrix_height-1)] $ \y -> do 
+    forM_ [0..(matrix_width-1)] $ \x -> do
       drawCoordianteSpot (fromIntegral (M.getElem (x+1) (y+1) m)) x y
 
 destroyEventHandler :: IO ()
 destroyEventHandler =
-  do G.mainQuit
+  do mainQuit
 
-updateCanvas :: G.DrawingArea -> IO Bool
+updateCanvas :: DrawingArea -> IO Bool
 updateCanvas canvas = do
-  G.widgetQueueDraw canvas
-  liftIO (putStrLn ("draw"))
+  widgetQueueDraw canvas
   return False
   
 convert' :: Int -> Int
-convert' value = 1 + (value `quot` 12)
+convert' value = 1 + (value `quot` tile_size)
 
 getPixel :: Int -> Int -> M.Matrix Int -> Pixel8
 getPixel x y matrix = (fromIntegral(M.getElem (x+1) (y+1) matrix))
 
 imageCreator :: String -> M.Matrix Int -> IO()
-imageCreator path matrix = writePng path $ generateImage pixelRenderer 28 28
-      where pixelRenderer x y = PixelRGBA8 (getPixel x y matrix) (getPixel x y matrix) (getPixel x y matrix) 255
+imageCreator path matrix = writePng path $ generateImage pixelRenderer matrix_width matrix_height
+      where pixelRenderer x y = PixelRGBA8 (getPixel x y matrix) (getPixel x y matrix) (getPixel x y matrix) least_opacity
 
-main ::  IO ()
+toInt :: Double -> Int
+toInt = round
+
+main :: IO ()
 main =
   do
     mouseClickState <- newIORef False
-    drawSpots' <- newIORef (M.zero 28 28)
-    G.initGUI
-    window <- G.windowNew
-    vBox <- G.vBoxNew False 3
-    paintArea <- G.drawingAreaNew
-    saveBtn <- G.buttonNew
-    predictBtn <- G.buttonNew
-    resetBtn <- G.buttonNew
+    drawSpots' <- newIORef (M.zero matrix_width matrix_height)
+    initGUI
+    vBox <- vBoxNew False 1
+    hBox <- hBoxNew False 2
+    hBoxBottom <- hBoxNew False 2
+    vBoxBottom <- vBoxNew False 1
 
-    
-    G.set saveBtn [ G.buttonLabel G.:= "save" ]
-    G.on saveBtn G.buttonActivated $ do
+    paintArea <- drawingAreaNew
+    displayField <- labelNew (Just " ")
+
+    spinBtn <- spinButtonNewWithRange 0 999999 1
+    --set spinBtn [ buttonLabel := "iteration" ]
+
+    entryField <- entryNew
+    set entryField [ entryPlaceholderText := Just("class") ]
+
+    saveBtn <- buttonNew
+    set saveBtn [ buttonLabel := "save" ]
+    on saveBtn buttonActivated $ do
+      classVal <- entryGetText entryField
+      iterationVal <- spinButtonGetValue spinBtn
       localDrawSpots' <- liftIO $ (readIORef drawSpots')
-      imageCreator "./wow.png" localDrawSpots'
+      imageCreator (classVal ++"_" ++ (show $ toInt iterationVal) ++ ".png") localDrawSpots'
+      spinButtonSetValue spinBtn (iterationVal+1)
       return ()
     
-    G.set predictBtn [ G.buttonLabel G.:= "predict" ]
-    G.on predictBtn G.buttonActivated $ do
-      liftIO (putStrLn ("is called 2"))
+    predictBtn <- buttonNew
+    set predictBtn [ buttonLabel := "predict" ]
+    on predictBtn buttonActivated $ do
+      liftIO $ labelSetText displayField "predict called"
       return ()
 
-    G.set resetBtn [ G.buttonLabel G.:= "resetBtn" ]
-    G.on resetBtn G.buttonActivated $ do
-      liftIO $ writeIORef drawSpots' (M.zero 28 28)              
+    resetBtn <- buttonNew
+    set resetBtn [ buttonLabel := "resetBtn" ]
+    on resetBtn buttonActivated $ do
+      liftIO $ writeIORef drawSpots' (M.zero matrix_width matrix_height)              
       liftIO (updateCanvas paintArea)
       liftIO (putStrLn ("reset called"))
       return ()
 
-    displayField <- G.labelNew (Just " ")
-    G.set window [G.windowDefaultWidth G.:= 337,
-                G.windowDefaultHeight G.:= 477,
-                G.windowWindowPosition G.:= G.WinPosCenter,
-                G.containerChild G.:= vBox,
-                G.windowTitle G.:= "Mouse Movement Demo"]
-    G.widgetAddEvents paintArea [G.PointerMotionMask, G.EnterNotifyMask, G.LeaveNotifyMask, G.ButtonPressMask, G.ButtonReleaseMask]
-    G.on paintArea G.enterNotifyEvent $ do
-        liftIO $ G.labelSetText displayField "drawingArea entered"
-        return False
-    G.on paintArea G.leaveNotifyEvent $ do
-        liftIO $ G.labelSetText displayField "drawingArea left"
-        return False
-    G.on paintArea G.buttonPressEvent $ do
-        bttnId <- G.eventButton
+    
+    window <- windowNew
+    set window [windowDefaultWidth := window_height,
+                windowDefaultHeight := window_width,
+                windowWindowPosition := WinPosCenter,
+                containerChild := vBox,
+                windowTitle := "Neural Network Demo"]
+    
+    widgetAddEvents paintArea [PointerMotionMask, ButtonPressMask, ButtonReleaseMask]
+    on paintArea buttonPressEvent $ do
+        bttnId <- eventButton
         liftIO $ writeIORef mouseClickState True
         return False
-    G.on paintArea G.buttonReleaseEvent $ do
+
+    on paintArea buttonReleaseEvent $ do
         liftIO $ writeIORef mouseClickState False
         return False
-    G.on paintArea G.motionNotifyEvent $ do
+    
+    on paintArea motionNotifyEvent $ do
         localMouseClicked <- liftIO $ (readIORef mouseClickState)
         if localMouseClicked
             then do
-              (x,y) <- liftIO ( G.widgetGetPointer paintArea)
+              (x,y) <- liftIO ( widgetGetPointer paintArea)
               localDrawSpots' <- liftIO $ (readIORef drawSpots')
-              liftIO $ writeIORef drawSpots' (M.setElem 255 (convert' x, convert' y) localDrawSpots')
-              liftIO (updateCanvas paintArea)
+              if x > 0 && x < window_height && y > 0 && y < window_height 
+                then do
+                  liftIO $ writeIORef drawSpots' (M.setElem 255 (convert' x, convert' y) localDrawSpots')
+                  liftIO (updateCanvas paintArea)
+                else
+                  return False
             else
               return False
         return False
-    G.on paintArea G.draw $ do
+    
+    on paintArea draw $ do
         localDrawSpots' <- liftIO $ (readIORef drawSpots')
         drawCoordinates localDrawSpots'
         return ()
-    G.on window G.configureEvent $ do
-           (w, h) <- G.eventSize
-           liftIO (putStrLn (show w ++ "x" ++ show h))
+    
+    
+    on window configureEvent $ do
+           (w, h) <- eventSize
            return False
-    G.on window G.objectDestroy destroyEventHandler
-    G.boxPackStart vBox displayField G.PackNatural 0
-    G.boxPackStart vBox saveBtn G.PackNatural 0
-    G.boxPackStart vBox predictBtn G.PackNatural 0
-    G.boxPackStart vBox resetBtn G.PackNatural 0
-    G.boxPackStart vBox paintArea G.PackGrow 1
-    G.widgetShow displayField
-    G.widgetShow saveBtn
-    G.widgetShow predictBtn
-    G.widgetShow resetBtn
-    G.widgetShow paintArea
-    G.widgetShow vBox
-    G.widgetShow window
-    G.mainGUI
+    
+    on window objectDestroy destroyEventHandler
+    boxPackStart vBox displayField PackNatural 0
+
+    boxPackStart hBox resetBtn PackGrow 0
+    boxPackStart hBox predictBtn PackGrow 0
+
+    boxPackStart vBoxBottom hBoxBottom PackNatural 1
+    boxPackStart vBoxBottom entryField PackNatural 1
+    boxPackStart vBoxBottom spinBtn PackNatural 1
+    boxPackStart vBoxBottom saveBtn PackNatural 1
+
+    boxPackStart vBox hBox PackNatural 1
+    boxPackStart vBox paintArea PackGrow 1
+    boxPackStart vBox vBoxBottom PackNatural 1
+
+
+    widgetShow displayField
+    widgetShow resetBtn
+    widgetShow predictBtn
+    widgetShow entryField
+    widgetShow spinBtn
+    widgetShow saveBtn
+    widgetShow paintArea
+    widgetShow hBox
+    widgetShow vBox
+    widgetShow hBoxBottom
+    widgetShow vBoxBottom
+    widgetShow window
+    mainGUI
