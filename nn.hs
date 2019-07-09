@@ -1,185 +1,146 @@
+module NN where
+
+
+-- aktuelle Version der Netz-Funktionalitäten
+-- unterstützt Ausgabe beim Training
+-- funktioniert zusammen mit der Oberfläche
+
 import Data.Matrix
 import System.Random
 import System.IO.Unsafe
+import qualified Data.ByteString.Lazy as BSL
+import Data.Binary
+import Data.List.Split
+
+data NeuralNetwork = NeuralNetwork { config::[Int] , weights::[Matrix Float] , biases::[Matrix Float] }
+
+instance Binary NeuralNetwork where
+    put (NeuralNetwork config weights biases) = do
+      put config
+      put $ fmap toList weights
+      put $ fmap toList biases
+
+    get = do
+      config <- get
+      rawWeights <- get
+      let weights = [fromList (config!!(i+1)) (config!!i) (rawWeights!!i) | i <- [0..(length config-2)]]
+      rawBiases <- get
+      let biases = [fromList (config!!i) 1 (rawBiases!!(i-1)) | i <- [1..((length config)-1)]]
+      return (NeuralNetwork config weights biases)
+
+createNeuralNetwork :: [Int] -> NeuralNetwork
+createNeuralNetwork config = NeuralNetwork
+  config
+  [randomRMatrix (config!!(i+1)) (config!!i) (-1.0,1.0) | i <- [0..((length config)-2)]]
+  [zeroMatrix (config!!i) 1 | i <- [1..((length config)-1)]]
+
+predict :: NeuralNetwork -> Matrix Float -> Matrix Float
+predict nn input = last (forwardPass nn input)
+
+train :: NeuralNetwork -> [(Matrix Float, Matrix Float)] -> Float -> NeuralNetwork
+
+train nn samples learningRate = foldl back nn samples
+                                where back  net sample = backprop net (fst sample) (snd sample) learningRate
+
+serialize :: NeuralNetwork -> FilePath -> IO ()
+serialize nn path = do
+  let encoded_nn = encode nn
+  BSL.writeFile path encoded_nn
+
+deserialize :: FilePath -> IO NeuralNetwork
+deserialize path = do
+  nn <- decodeFile path :: IO NeuralNetwork
+  return nn
+
+serialize2 :: NeuralNetwork -> FilePath -> IO ()
+serialize2 nn path = do
+  writeFile path (show (
+    [fromIntegral (length (config nn))]
+    ++ (map fromIntegral (config nn))
+    ++ (concat [ toList ((weights nn)!!i) | i <- [0..((length (config nn))-2)] ])
+    ++ (concat [ toList ((biases nn)!!i) | i <- [0..((length (config nn))-2)] ])))
+
+deserialize2 :: FilePath -> IO NeuralNetwork
+deserialize2 path = do
+  input <- (readFile path)
+  let flist = map stringToFloat (splitOn "," (take ((length (drop 1 input)) - 1) (drop 1 input)))
+  let config = map round (take (round (flist!!0)) (drop 1 flist))
+  let wstart = drop (1 + (length config)) flist
+  let weights = [ fromList (config!!(i+1)) (config!!i) (take ((config!!(i+1)) * (config!!i)) (drop (sum [ (config!!j)*(config!!(j+1)) | j <- [0..i-1]]) wstart)) | i <- [0..((length config)-2)] ]
+  let bstart = drop (sum [ (config!!j)*(config!!(j+1)) | j <- [0..((length config)-2)]]) wstart
+  let biases = [ fromList (config!!(i+1)) 1 (take ((config!!(i+1))) (drop (sum [ (config!!(j+1)) | j <- [0..i-1]]) bstart)) | i <- [0..((length config)-2)] ]
+  return (NeuralNetwork config weights biases)
+
+forwardPass :: NeuralNetwork -> Matrix Float -> [Matrix Float]
+forwardPass nn input = input : forwardPass' (weights nn) (biases nn) input
+
+forwardPass' :: [Matrix Float] -> [Matrix Float] -> Matrix Float -> [Matrix Float]
+forwardPass' [] _ activation = []
+forwardPass' _ [] activation = []
+forwardPass' (w:weights) (b:biases) activation = nextActivation : forwardPass' weights biases nextActivation
+                                              where nextActivation = fmap sigmoid ((multStd w activation) + b)
 
 
-data NeuralNetwork = NeuralNetwork { weights::[Matrix Float], biases::[Matrix Float] } deriving Show
+backprop :: NeuralNetwork -> Matrix Float -> Matrix Float -> Float -> NeuralNetwork
+backprop nn input output learningRate = apply nn (reverse (gradients (reverse (weights nn)) (reverse (biases nn)) (reverse (init activations)) ((last activations) - output))) learningRate
+                                          where activations = forwardPass nn input
 
--- current test-function
+apply :: NeuralNetwork -> [(Matrix Float,Matrix Float)] -> Float -> NeuralNetwork
+apply nn updates learningRate = NeuralNetwork (config nn) (getUpdated (weights nn) (fst (unzip updates)) learningRate) (getUpdated (biases nn) (snd (unzip updates)) learningRate)
 
-getTrainFactor :: Float -> Float
--- standard trainFactor = 1
-getTrainFactor x   | x <= 0 = 1
-                | otherwise = x
+getUpdated :: [Matrix Float] -> [Matrix Float] -> Float -> [Matrix Float]
+getUpdated list updates learningRate =  zipWith (\l u -> l - fmap (*learningRate) u) list updates
 
-main = do
-    let trainig_data = getTrainingData 1000
-    let network = initializeNeuralNetwork [2,3,1]
-    putStrLn "Das Netzwerk vor dem Trainieren:"
-    print network
-    predict network "====================================="
-    putStrLn "Wie groß soll der Trainingsfaktor gewählt werden ?"
-    train_in <- getLine
-    let trainFactor = getTrainFactor (read train_in :: Float)
-    let trained_network = train network trainig_data trainFactor
-    putStrLn "Training beendet !"
-    putStrLn "Das Netz sieht nun so aus:"
-    print trained_network
-    putStrLn "==============================="
-    predict trained_network "Programm beendet !"
+gradients :: [Matrix Float] -> [Matrix Float] -> [Matrix Float] -> Matrix Float -> [(Matrix Float, Matrix Float)]
+gradients [] _ _ _ = []
+gradients _ [] _ _ = []
+gradients _ _ [] _ = []
+gradients (w:rWeights) (b:rBiases) (a:rActivations) error = (multStd error' (transpose a), error') : gradients rWeights rBiases rActivations error''
+                                                                where error' = (multiplyElementwise error (fmap sigmoid' ((multStd w a) + b)))
+                                                                      error'' = (multStd (transpose w) error')
 
-
-predict :: NeuralNetwork -> [Char] -> IO [Char]
-
-predict net msg =     do
-              putStrLn "Geben sie den Input ein, den das Netwzwerk verarbeiten soll (a AND b = ...) !"
-              putStrLn "Geben sie Input a ein:"
-              input1 <- getLine
-              putStrLn " "
-              putStrLn "Geben sie Input b ein:"
-              input2 <- getLine
-              putStrLn " "
-              let val1 = read input1:: Float
-              let val2 = read input2 :: Float
-              let net_out =  last $ forwardPass net (fromList 2 1 [val1,val2])
-              let net_percent = head $ toList net_out
-
-              let treshold = 0.5 :: Float
-              let result = net_percent > treshold
-
-              putStrLn ("Für den Input "++ (show val1) ++ " AND " ++ (show  val2) ++ " ergibt sich das Ergebnis " ++ (show result))
-              let diff = (abs (treshold - net_percent)) *2
-              putStrLn ("Das Netz ist sich mit dem Ergebnis zu " ++ (show $ diff*100) ++"% sicher")
-
-              putStrLn "Erneute Eingabe ? (j/n)"
-              u_in <- getLine
-              let yon = u_in :: [Char]
-              putStrLn " "
-              if (yon == "j") then (predict net msg) else return msg
-
-
---________________________________________________________________________
-
-getTrainingData :: Int -> [(Matrix Float,Matrix Float)]
-getTrainingData n = [(getInput (mod x 4), getOutput (mod x 4)) | x<-[1..n]]
-getInput :: Int -> (Matrix Float)
-getInput x | x==0 = fromList 2 1 [0.0,0.0] | x==1 = fromList 2 1 [0.0,1.0] | x==2 = fromList 2 1 [1.0,0.0] | otherwise = fromList 2 1 [1.0,1.0]
-getOutput :: Int -> (Matrix Float)
-getOutput x | x==0 = fromList 1 1 [0.0] | x==1 = fromList 1 1 [0.0] | x==2 = fromList 1 1 [0.0] | otherwise = fromList 1 1 [1.0]
-
--- || Main Functions || --
-
--- takes list of Integers as an argument,
--- the first element representing the number of nodes in the input layer
--- the second   "           "      "    "     "   "    "  "  output layer
--- the remaining ints represent the num of nodes in the hidden layer(s)
-
-initializeNeuralNetwork :: [Int] -> NeuralNetwork
-initializeNeuralNetwork l = NeuralNetwork
-                            [randomMatrix (l!!(i+1)) (l!!i) (-1.0, 1.0) | i <- [0..((length l) -2)]]
-                            [zeroMatrix (l!!i) 1 | i <- [1..((length l) -1)]]
-
--- Functionality: generate Matrix filled with random numbers
-
--- Arguments:
--- Int - num of rows
--- Int - num of columns
--- (Fl,Fl) - pair representing random range
-
-randomMatrix :: Int -> Int -> (Float,Float) -> Matrix Float
-randomMatrix n m b = matrix n m $ \(i,j) -> unsafePerformIO $ getStdRandom $ randomR b
-
-
--- Functionality: generate zero-filled Matrix
-
--- Arguments:
--- Int - num of rows
--- Int - num of columns
+randomRMatrix :: Int -> Int -> (Float, Float) -> Matrix Float
+randomRMatrix rows columns range = matrix rows columns (\(i, j) -> unsafePerformIO (getStdRandom (randomR range)))
 
 zeroMatrix :: Int -> Int -> Matrix Float
-zeroMatrix n m = matrix n m $ \(i,j) -> 0.0
+zeroMatrix rows columns = matrix rows columns (\(i, j) -> 0.0)
 
-
--- Functionality: implementation of sigmoid-function
-
--- Arguments:
--- Int - arg of sigmoid-function
+multiplyElementwise :: Matrix Float -> Matrix Float -> Matrix Float
+multiplyElementwise a b = fromList (nrows a) (ncols b) (zipWith (*) listA listB)
+                          where listA = toList a
+                                listB = toList b
 
 sigmoid :: Float -> Float
-sigmoid x = 0.5 * (1 + tanh (x/2))
-sigmoid' x = sigmoid x * (1-sigmoid x)
+sigmoid x = 1 / (1 + exp (-x))
+
+sigmoid' :: Float -> Float
+sigmoid' x = (sigmoid x) * (1 - (sigmoid x))
+
+stringToFloat :: String -> Float
+stringToFloat string = read string :: Float
+
+trainVerbose :: NeuralNetwork -> [(Matrix Float, Matrix Float)] -> Float -> IO NeuralNetwork
+trainVerbose nn ((input, output):samples) learningRate = trainVerbose' nn samples learningRate 0 0
+
+data BackpropR = BackpropR { nn :: NeuralNetwork , totalError :: Float , totalIterations :: Int}
+
+trainVerbose' :: NeuralNetwork -> [(Matrix Float, Matrix Float)] -> Float -> Float -> Int -> IO NeuralNetwork
+trainVerbose' nn' [] _ _ _ = return nn'
+trainVerbose' nn' ((input, output):samples) learningRate totalError' trainingIterations' = do
+  backpropR <- (backpropVerbose nn' input output learningRate totalError' trainingIterations')
+  trainVerbose' (nn backpropR) samples learningRate (totalError backpropR) (totalIterations backpropR)
+
+backpropVerbose :: NeuralNetwork -> Matrix Float -> Matrix Float -> Float -> Float -> Int -> IO BackpropR
+backpropVerbose nn input output learningRate totalError totalIterations = do
+  let err = 0.5 * (sum $ toList (fmap (^2) ((last activations) - output)))
+  let updatedNN = apply nn (reverse (gradients (reverse $ weights nn) (reverse $ biases nn) (reverse $ init activations) ((last activations) - output))) learningRate
+  putStrLn ((show (totalIterations + 1)) ++ ": " ++ show ((totalError + err)/(fromIntegral (totalIterations + 1))))
+  return (BackpropR updatedNN (totalError + err) (totalIterations + 1))
+  where activations = forwardPass nn input
 
 
--- Functionality: recursive part of forward pass
-
--- Arguments:
--- [Matrix Float] - List of weight - matrixes
--- [Matrix Float] - List of bias - matrixes
---  Matrix Float  - activations passed from previous layer (or input)
--- [Matrix Float] - (current) List of activation - matrixes
-
-forward :: [Matrix Float] -> [Matrix Float] -> Matrix Float -> [Matrix Float]
-
-forward [] _ activation = []
-forward _ [] activation = []
-forward (w:weights) (b:biases) activation = ergebnis : (forward weights biases ergebnis)
-                                            where ergebnis = fmap sigmoid (b + (multStd w activation))
-
--- forwardTest (w:weights) (b:biases) activation = ergebnis where ergebnis = (multStd w activation)
-
-
--- Functionality - starter for forwardPass
-
--- Arguments:
--- NeuralNetwork : state of neural net (before forward pass)
---  Matrix Float : matrix representing input
--- [Matrix Float]: list of activation - matrixes (after completed forward pass9
-
-forwardPass network input = input : forward (weights network) (biases network) input
-
--- || ------------------------------ ||--
-
-
--- [a,b,c,d,e] [1,2,3,4,5] [(a,1),(b,2),(c,3)]
-
-
-reshape n m matrix = fromList n m $ toList matrix
-
-
-getUpdates [] _ _ _ = []
-getUpdates _ [] _ _ = []
-getUpdates _ _ [] _ = []
-getUpdates (w:r_weights) (b:r_biases) (a:r_activations) error = ((multStd act_error (transpose a)), act_error) : getUpdates r_weights r_biases r_activations (multStd (transpose w) act_error) -- ist das berechnen des nächsten fehlers richtig?
-                                                                where act_error = (mul error (fmap sigmoid' ((multStd w a) + b)))
-
-getUpdatedValues :: [Matrix Float] -> [(Matrix Float,Matrix Float)] -> Bool -> Float -> [Matrix Float]
-getUpdatedValues [] _ _ _ = []
-getUpdatedValues _ [] _ _ = []
-getUpdatedValues (x:to_update) ((wU,bU):updates) is_bias trainFactor = x - fmap (*trainFactor) (if(is_bias) then bU else wU) : getUpdatedValues to_update updates is_bias trainFactor
-
-applyUpdates network updates trainFactor = NeuralNetwork (getUpdatedValues (weights network) updates False trainFactor) (getUpdatedValues (biases network) updates True trainFactor)
-
-backprop network input output trainFactor = applyUpdates network (reverse $ getUpdates (reverse $ weights network) (reverse $ biases network) (reverse $ init fp) (last fp - output)) trainFactor where fp = forwardPass network input
-
-q = backprop (initializeNeuralNetwork [2,3,2]) (fromList 2 1 [2.0,1.0]) (fromList 2 1 [1.0,2.0]) 0.1
-
-train network [] _ = network
-train network ((input,output):trainig_data) trainFactor = train (backprop network input output trainFactor) trainig_data trainFactor
--- ...
-
--- |Helpers| --
-
--- Functionality: 'Multiply' two matrixes (not matrix multiplication)
-
--- Arguments:
--- Matrix Float - input matrix m
--- Matrix Float - input matrix n
--- Matrix Float - result - matrix,
---                  where each field is r_ij = m_ij * n_ij
-
-mul :: Matrix Float -> Matrix Float -> Matrix Float
-
-mul m n = fromList (nrows n) (ncols m) (zipWith (*) listM listN)
-           where listM = toList m
-                 listN = toList n
--- | ---- | --
+mapToResult :: Matrix Float -> (Float, Int)
+mapToResult m | l /= 10 = (0.0 ,(-1))
+              | otherwise = maximum (zip matList [0..9])
+                where l = length $ matList
+                      matList = toList m
