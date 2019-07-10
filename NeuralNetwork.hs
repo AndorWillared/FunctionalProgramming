@@ -181,7 +181,7 @@ update [] _ _ = []
 update _ [] _ = []
 update (m:matrices) (u:updates) learningRate = m - fmap (*learningRate) u : update matrices updates learningRate
 
--- | Todo
+-- |
 gradients :: [Matrix Float] 
           -> [Matrix Float] 
           -> [Matrix Float] 
