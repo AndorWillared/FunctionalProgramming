@@ -67,7 +67,7 @@ instance Binary NeuralNetwork where
     let biases = [fromList (config!!i) 1 (rawBiases!!(i-1)) | i <- [1..((length config)-1)]]
     return (NeuralNetwork config weights biases)
 
--- | The function 'createNeuralNetwork' creates a randomly initialised network with the specified layers
+-- | 'createNeuralNetwork' creates a randomly initialised network with the specified layers
 --
 -- __For example:__ 
 -- 
