@@ -31,10 +31,8 @@ import Codec.Picture.Png
 -- Parsing
 
 -- | 'getTrainingSamples' is used to parse the raw MNIST training data to a representation usable in Haskell
---
-
-getTrainingSamples :: FilePath -- ^ path to "train-images.idx3-ubyte"
-                   -> FilePath -- ^ path to "train-labels.idx3-ubyte"
+getTrainingSamples :: FilePath                              -- ^ Path to "train-images.idx3-ubyte"
+                   -> FilePath                              -- ^ Path to "train-labels.idx3-ubyte"
                    -> IO ([(Matrix Float, Matrix Float)])   -- ^ Training data as a list of pairs, where fst represents an image and snd the corresponding label
 
 getTrainingSamples pathImgs pathLabels = do
@@ -42,38 +40,36 @@ getTrainingSamples pathImgs pathLabels = do
   labels <- parseLabels pathLabels
   return (zip images labels)
 
--- | 'getTestSamples' is used to parse the raw MNIST test data to a representation usable in Haskell
---
-
-getTestSamples :: FilePath   -- ^ path to "t10k-images.idx3-ubyte"
-               -> FilePath   -- ^ path to "t10k-labels.idx3-ubyte"
-               -> IO ([(Matrix Float, Matrix Float)])  -- ^ Test data as a list of pairs, where fst represents an image and snd the corresponding label
+-- | 'getTestSamples' is used to parse the raw MNIST test data to a representation usable in Haskel
+getTestSamples :: FilePath                              -- ^ Path to "t10k-images.idx3-ubyte"
+               -> FilePath                              -- ^ Path to "t10k-labels.idx3-ubyte"
+               -> IO ([(Matrix Float, Matrix Float)])   -- ^ Test data as a list of pairs, where fst represents an image and snd the corresponding label
 
 getTestSamples pathImgs pathLabels = do
   images <- parseImages pathImgs
   labels <- parseLabels pathLabels
   return (zip images labels)
 
-
-parseLabels :: FilePath -> IO ([Matrix Float])
+-- | 'parseLabels' takes a FilePath and returns a list of matrixes representing the labels
+parseLabels :: FilePath     -- ^ Path to a MNIST label file
+            -> IO ([Matrix Float])
 parseLabels path = do
   labels <- B.readFile path
   return (map (fromList 10 1) (map toCategorical10 (map fromIntegral (B.unpack (B.drop 8 labels)))))
 
-parseImages :: FilePath -> IO ([Matrix Float])
+-- | 'parseImages' works exactly like 'parseLabels' but returns a representation for images
+parseImages :: FilePath
+            -> IO ([Matrix Float])  -- ^ Path to a MNIST image file
 parseImages path = do
   images <- B.readFile path
   return (map (fmap (/255)) (map (fromList 784 1) (chunksOf 784 (map fromIntegral (B.unpack (B.drop 16 images))))))
 
 
-
 -- Png
 
 -- |  'pngToVector' takes a file path and parses it to an equivalent float matrix
---
-
-pngToVector :: FilePath     -- ^ path to a .png file
-            -> IO (Matrix Float)    -- ^ float matrix representing the input file
+pngToVector :: FilePath             -- ^ Path to a .png file
+            -> IO (Matrix Float)    -- ^ Float matrix representing the input file
 
 pngToVector path = do
   pngData <- B.readFile path
@@ -85,13 +81,19 @@ pngToVector path = do
 -- | 'vectorToPng' takes a float matrix and a file path, creates an image representation of the input matrix
 --
 
-vectorToPNG :: Matrix Float     -- ^ float matrix to write
-            -> FilePath     -- ^ path to write the .png to
+vectorToPNG :: Matrix Float -- ^ Float matrix to write
+            -> FilePath     -- ^ Path to write the .png to
             -> IO()
 
 vectorToPNG vector path = writePng path (generateImage (grayscaleAt vector) 28 28)
 
-grayscaleAt :: Matrix Float -> Int -> Int -> PixelRGBA8
+-- | 'grayscaleAt' reads a value specified by X and Y from a matrix, returning a PixelRBA8 of the same brightness
+
+grayscaleAt :: Matrix Float     -- ^ Matrix to read from
+            -> Int              -- ^ X value
+            -> Int              -- ^ Y value
+            -> PixelRGBA8
+
 grayscaleAt vector x y = PixelRGBA8 grayscale grayscale grayscale 255
   where grayscale = round ((getElem (x+y*28+1) 1 vector)*255)
 
@@ -100,8 +102,16 @@ grayscaleAt vector x y = PixelRGBA8 grayscale grayscale grayscale 255
 toCategorical10 :: Int -> [Float]
 toCategorical10 label = [if i == label then 1 else 0 | i <- [0..9]]
 
-redChannelAt :: Image PixelRGBA8 -> Int -> Int -> Int
+-- | 'redChannelAt' reads the R value of a Pixel specified by X and Y from a given image
+
+redChannelAt :: Image PixelRGBA8    -- ^ Image to read from
+             -> Int     -- ^ X coordinate of desired pixel
+             -> Int     -- ^ Y coordinate of desired pixel
+             -> Int
 redChannelAt rgba8 x y = redChannel (pixelAt rgba8 x y)
 
-redChannel :: PixelRGBA8 -> Int
+-- | 'redChannel' returns R value of a PixelRGBA8
+
+redChannel :: PixelRGBA8    -- ^ Pixel to read from
+           -> Int
 redChannel (PixelRGBA8 r g b a) = fromIntegral r

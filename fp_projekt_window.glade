@@ -65,6 +65,8 @@
   <object class="GtkWindow" id="mainWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">FP-Projekt SS 2019</property>
+    <property name="default_width">800</property>
+    <property name="default_height">600</property>
     <property name="destroy_with_parent">True</property>
     <child>
       <placeholder/>
@@ -91,6 +93,20 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
+              <object class="GtkButton" id="networkSaveButton">
+                <property name="label" translatable="yes">Netz speichern</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="hexpand">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkFileChooserButton" id="imgFileChooserButton">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -101,7 +117,7 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">2</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -115,7 +131,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">4</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -198,10 +214,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkFileChooserButton" id="networkFileChooser">
+              <object class="GtkFileChooserButton" id="networkFileChooserButton">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="title" translatable="yes">Netz auswählen</property>
+                <property name="title" translatable="yes">Gültiges Netz auswählen</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -229,7 +245,7 @@
         <property name="can_focus">False</property>
         <child>
           <object class="GtkButton" id="modalTrainLoadButton">
-            <property name="label" translatable="yes">Trainieren</property>
+            <property name="label" translatable="yes">Laden</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -381,6 +397,21 @@
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
     <child>
+      <object class="GtkEntry" id="networkNameField">
+        <property name="name">networkNameField</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="text" translatable="yes">EigenesNetz</property>
+        <property name="placeholder_text" translatable="yes">Speichername des Netzes</property>
+        <property name="input_purpose">name</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -440,58 +471,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Epochen</property>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSpinButton" id="epochSelector">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="text" translatable="yes">1</property>
-            <property name="adjustment">epochAdjustment</property>
-            <property name="value">1</property>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">False</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkCheckButton">
-            <property name="label" translatable="yes">Mischen</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">False</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">False</property>
-        <property name="position">2</property>
+        <property name="position">1</property>
       </packing>
     </child>
     <child>
