@@ -5,26 +5,34 @@ License     : MIT
 Maintainer  : andor.willared@mni.thm.de
 Stability   : experimental
 
-A naive haskell neural-network implementation
+A naive neural-network implementation in haskell.
+Use 'createNeuralNetwork' to get an initialised network and train it using the 'train' function.
+You can get the results of your trained network by running 'predict'
 -}
 
 module NeuralNetwork (
   -- * DataType
   NeuralNetwork,
-  config,
-  weights,
-  biases,
   -- * Initialisiation
   createNeuralNetwork,
   -- * Prediction
   predict,
   -- * Training
   train,
+  forwardPass,
   -- * Serializiation
+  -- ** Binary coded
   serialize,
   deserialize,
-  serialize2,
-  deserialize2,
+  -- ** Plain coded
+  serializePlain,
+  deserializePlain,
+  -- * Helper functions
+  sigmoid,
+  sigmoid',
+  randomRMatrix,
+  zeroMatrix,
+  multiplyElementwise,
   ) where
 
 import Data.Matrix
@@ -42,7 +50,8 @@ import System.Random.Shuffle
 -- - weights as 'Matrix' of 'Float' 
 -- - biases as 'Matrix' of 'Float' 
 
-data NeuralNetwork = NeuralNetwork { config::[Int], weights::[Matrix Float], biases::[Matrix Float] }
+data NeuralNetwork 
+    = NeuralNetwork { config::[Int], weights::[Matrix Float], biases::[Matrix Float] }
 
 instance Binary NeuralNetwork where
   put (NeuralNetwork config weights biases) = do
@@ -64,9 +73,9 @@ instance Binary NeuralNetwork where
 -- 
 -- A network with 784 input-nodes, 2 hidden layers with 1000 nodes each and 10 output-nodes 
 -- 
--- @> createNeuralNetwork [784,1000,1000,10]@
+-- @>network <- createNeuralNetwork [784,1000,1000,10]@
 createNeuralNetwork :: [Int]            -- ^ List of Nodes per Layer
-                    -> Int
+                    -> Int              -- ^ Seed for the random generation of nodes    
                     -> IO (NeuralNetwork)
 
 createNeuralNetwork config seed = do
@@ -76,13 +85,17 @@ createNeuralNetwork config seed = do
 
 -- | 'predict' takes an network and a fitting input and runs a forwardPass with these parameters. 
 -- The resulting output 'Matrix' is returned
-predict :: NeuralNetwork 
-        -> Matrix Float 
-        -> Matrix Float
+predict :: NeuralNetwork    -- ^ trained 'NeuralNetwork' that will be used to 'predict' an output 
+        -> Matrix Float     -- ^ vector of the input values for the given network
+        -> Matrix Float     -- ^ vector of the output node values
         
 predict nn input = last (forwardPass nn input)
 
-forwardPass :: NeuralNetwork -> Matrix Float -> [Matrix Float]
+-- | A function that runs one 'forwardPass' for the provided 'NeuralNetwork' 
+-- with the given input and returns the activations of all layers except the input layer.
+forwardPass :: NeuralNetwork    -- ^ trained 'NeuralNetwork' that will be used for 'forwardPass'
+            -> Matrix Float     -- ^ vector of the input values for the given network
+            -> [Matrix Float]   -- ^ list of the matrices of the activations (last one is the output vector of the network)
 forwardPass nn input = input : forwardPass' (weights nn) (biases nn) input
 
 forwardPass' :: [Matrix Float] -> [Matrix Float] -> Matrix Float -> [Matrix Float]
@@ -104,9 +117,12 @@ data BackpropResult = BackpropResult { nn :: NeuralNetwork , totalError :: Float
 
 backprop :: NeuralNetwork -> Matrix Float -> Matrix Float -> Float -> Float -> Int -> IO (BackpropResult)
 backprop nn input output learningRate totalError totalIterations = do
+  
   let err = 0.5 * (sum $ toList (fmap (^2) ((last activations) - output)))
   let updatedNN = apply nn (reverse (gradients (reverse (weights nn)) (reverse (biases nn)) (reverse (init activations)) ((last activations) - output))) learningRate
+  
   putStrLn ((show (totalIterations + 1)) ++ ": " ++ show ((totalError + err)/(fromIntegral (totalIterations + 1))))
+  
   return (BackpropResult updatedNN (totalError + err) (totalIterations + 1))
     where activations = forwardPass nn input
 
@@ -146,16 +162,16 @@ deserialize path = do
   nn <- decodeFile path :: IO (NeuralNetwork)
   return nn
 
-serialize2 :: NeuralNetwork -> FilePath -> IO ()
-serialize2 nn path = do
+serializePlain :: NeuralNetwork -> FilePath -> IO ()
+serializePlain nn path = do
   writeFile path (show (
     [fromIntegral (length (config nn))]
     ++ (map fromIntegral (config nn))
     ++ (concat [ toList ((weights nn)!!i) | i <- [0..((length (config nn))-2)] ])
     ++ (concat [ toList ((biases nn)!!i) | i <- [0..((length (config nn))-2)] ])))
 
-deserialize2 :: FilePath -> IO (NeuralNetwork)
-deserialize2 path = do
+deserializePlain :: FilePath -> IO (NeuralNetwork)
+deserializePlain path = do
   input <- (readFile path)
   let flist = map read (splitOn "," (take ((length (drop 1 input)) - 1) (drop 1 input)))
   let config = map round (take (round (flist!!0)) (drop 1 flist))
