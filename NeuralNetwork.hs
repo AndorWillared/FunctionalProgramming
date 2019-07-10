@@ -73,7 +73,7 @@ instance Binary NeuralNetwork where
 -- 
 -- A network with 784 input-nodes, 2 hidden layers with 1000 nodes each and 10 output-nodes 
 -- 
--- @>network <- createNeuralNetwork [784,1000,1000,10]@
+-- @> network <- createNeuralNetwork [784,1000,1000,10]@
 createNeuralNetwork :: [Int]            -- ^ List of Nodes per Layer
                     -> Int              -- ^ Seed for the random generation of nodes    
                     -> IO (NeuralNetwork)
@@ -204,7 +204,7 @@ serialize nn path = do
 --
 -- Example usage:
 --
--- @network <- deserialize "networks/network_3.txt"@
+-- @> network <- deserialize "networks/network_3.txt"@
 deserialize :: FilePath -- ^ Relative path to the file
             -> IO (NeuralNetwork)
             
