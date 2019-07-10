@@ -50,17 +50,19 @@ getTestSamples pathImgs pathLabels = do
   labels <- parseLabels pathLabels
   return (zip images labels)
 
-
-parseLabels :: FilePath -> IO ([Matrix Float])
+-- | 'parseLabels' takes a FilePath and returns a list of matrixes representing the labels
+parseLabels :: FilePath     -- ^ Path to a MNIST label file
+            -> IO ([Matrix Float])
 parseLabels path = do
   labels <- B.readFile path
   return (map (fromList 10 1) (map toCategorical10 (map fromIntegral (B.unpack (B.drop 8 labels)))))
 
-parseImages :: FilePath -> IO ([Matrix Float])
+-- | 'parseImages' works exactly like 'parseLabels' but returns a representation for images
+parseImages :: FilePath
+            -> IO ([Matrix Float])  -- ^ Path to a MNIST image file
 parseImages path = do
   images <- B.readFile path
   return (map (fmap (/255)) (map (fromList 784 1) (chunksOf 784 (map fromIntegral (B.unpack (B.drop 16 images))))))
-
 
 
 -- Png
@@ -85,7 +87,13 @@ vectorToPNG :: Matrix Float -- ^ Float matrix to write
 
 vectorToPNG vector path = writePng path (generateImage (grayscaleAt vector) 28 28)
 
-grayscaleAt :: Matrix Float -> Int -> Int -> PixelRGBA8
+-- | 'grayscaleAt' reads a value specified by X and Y from a matrix, returning a PixelRBA8 of the same brightness
+
+grayscaleAt :: Matrix Float     -- ^ Matrix to read from
+            -> Int              -- ^ X value
+            -> Int              -- ^ Y value
+            -> PixelRGBA8
+
 grayscaleAt vector x y = PixelRGBA8 grayscale grayscale grayscale 255
   where grayscale = round ((getElem (x+y*28+1) 1 vector)*255)
 
@@ -94,8 +102,16 @@ grayscaleAt vector x y = PixelRGBA8 grayscale grayscale grayscale 255
 toCategorical10 :: Int -> [Float]
 toCategorical10 label = [if i == label then 1 else 0 | i <- [0..9]]
 
-redChannelAt :: Image PixelRGBA8 -> Int -> Int -> Int
+-- | 'redChannelAt' reads the R value of a Pixel specified by X and Y from a given image
+
+redChannelAt :: Image PixelRGBA8    -- ^ Image to read from
+             -> Int     -- ^ X coordinate of desired pixel
+             -> Int     -- ^ Y coordinate of desired pixel
+             -> Int
 redChannelAt rgba8 x y = redChannel (pixelAt rgba8 x y)
 
-redChannel :: PixelRGBA8 -> Int
+-- | 'redChannel' returns R value of a PixelRGBA8
+
+redChannel :: PixelRGBA8    -- ^ Pixel to read from
+           -> Int
 redChannel (PixelRGBA8 r g b a) = fromIntegral r
