@@ -11,6 +11,6 @@ You can view the documentation [here](https://git.thm.de/akwl20/neural-network-h
 
 ### To use our network:
 
-Clone repo, open 'window' under Ubuntu and open 'binary' in the the application. 
+Clone repo, open 'window' under Ubuntu and load 'binary' (pretrained nerual net) into the application if you want to see a trained network. 
 
 Or use our network module to use it for your own problem.
