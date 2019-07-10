@@ -3,14 +3,6 @@ Module      : Util
 Description : A haskell implementation of a neural network
 License     : MIT
 Maintainer  : andor.willared@mni.thm.de
-
-              felix.willared@mni.thm.de
-
-              marco.herzog@mni.thm.de
-
-              adiel.ahmad@mni.thm.de
-
-              jannis.weber@mni.thm.de
 Stability   : experimental
 
 Util functions for Machine Learning.
