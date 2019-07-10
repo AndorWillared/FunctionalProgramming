@@ -76,7 +76,7 @@ pngToVector path = do
   let decodedPng = decodePng pngData
   case decodedPng of
     Left err -> error (show err)
-    Right succ -> return (fromList 784 1 (map fromIntegral ([redChannelAt (fromDynamicImage succ) x y | y <- [0..27], x <- [0..27]])))
+    Right succ -> return fmap (/255.0) (fromList 784 1 (map fromIntegral ([redChannelAt (fromDynamicImage succ) x y | y <- [0..27], x <- [0..27]])))
 
 -- | 'vectorToPng' takes a float matrix and a file path, creates an image representation of the input matrix
 --
