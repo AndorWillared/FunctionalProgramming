@@ -73,11 +73,7 @@ instance Binary NeuralNetwork where
 -- 
 -- A network with 784 input-nodes, 2 hidden layers with 1000 nodes each and 10 output-nodes 
 -- 
-<<<<<<< HEAD
 -- @> network <- initNN [784,1000,1000,10] 123123@
-=======
--- @> network <- initNN [784,1000,1000,10]@
->>>>>>> b3b87f968d2006cac406278f6fdcb5d29c6fb36d
 initNN :: [Int]               -- ^ List of Nodes per Layer
        -> Int                 -- ^ Seed for the random generation of nodes
        -> IO (NeuralNetwork)
