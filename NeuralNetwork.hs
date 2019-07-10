@@ -259,12 +259,6 @@ zeroMatrix :: Int           -- ^ (m) Number of rows
 zeroMatrix rows columns = matrix rows columns (\(i, j) -> 0.0)
 
 -- | The function 'multiplyElementwise' is used to multiply each element of matrix A with the element at the same position in matrix B.
---  
--- For example:
---
--- ( 1 2 3 )   ( 2 3 2 )   ( 2 6 6 )
--- ( 3 2 1 ) * ( 3 2 3 ) = ( 9 4 3 )
--- ( 1 2 3 )   ( 2 3 2 )   ( 2 6 6 )
 multiplyElementwise :: Matrix Float -- ^ Matrix A
                     -> Matrix Float -- ^ Matrix B
                     -> Matrix Float
