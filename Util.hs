@@ -59,9 +59,16 @@ shuffle :: [a] -- ^ unshuffled list
 
 shuffle list seed = shuffle' list (length list) (mkStdGen seed)
 
-reshape :: Matrix a -- ^ matrix
-        -> Int      -- ^ rows
-        -> Int
-        -> Matrix a
+-- | 'reshape' reshapes a matrix
+-- __For example:__
+--
+-- @> shuffle [1,2,3] 42 -> returns [3,2,1]
+--
+
+reshape :: Matrix a -- ^ matrix to reshape
+        -> Int      -- ^ rows of reshaped matrix
+        -> Int      -- ^ columns of reshaped matrix
+        -> Matrix a -- ^ reshaped matrix
+
 reshape matrix rows columns = fromList rows columns (toList matrix)
 
