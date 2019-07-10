@@ -3,12 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="60d66e25-f2ad-4d42-a4c1-bb19783b5439" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NeuralNetwork.hi" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NeuralNetwork.hs" beforeDir="false" afterPath="$PROJECT_DIR$/NeuralNetwork.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NeuralNetwork.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Util.hs" beforeDir="false" afterPath="$PROJECT_DIR$/Util.hs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serialized_neural_networks/mnist" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/serialized_neural_networks/mnist2" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,8 +15,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Util.hs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="377">
-              <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+            <state relative-caret-position="685">
+              <caret line="61" column="52" selection-start-line="61" selection-start-column="52" selection-end-line="61" selection-end-column="52" />
             </state>
           </provider>
         </entry>
@@ -127,7 +121,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1562767984657" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1562768120570" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
@@ -178,7 +172,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="83125000" />
+    <option name="totallyTimeSpent" value="83260000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -193,7 +187,7 @@
     <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4991119" visible="true" weight="0.21538462" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4991119" visible="true" weight="0.21538462" />
       <window_info id="Structure" order="1" sideWeight="0.5008881" side_tool="true" weight="0.1562753" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -261,8 +255,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Util.hs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="377">
-          <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+        <state relative-caret-position="685">
+          <caret line="61" column="52" selection-start-line="61" selection-start-column="52" selection-end-line="61" selection-end-column="52" />
         </state>
       </provider>
     </entry>
