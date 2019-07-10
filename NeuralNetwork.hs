@@ -2,21 +2,25 @@
 Module      : NeuralNetwork
 Description : A haskell implementation of a neural network
 License     : MIT
-Maintainer  : andor.willared@mni.thm.de
+Maintainer  : adiel.ahmad@mni.thm.de
+              andor.willared@mni.thm.de
+              felix.willared@mni.thm.de
+              marco.herzog@mni.thm.de
+              jannis.weber@mni.thm.de
 Stability   : experimental
 
 A naive neural-network implementation in haskell. 
 
-Use 'createNeuralNetwork' to get an initialised network and train it using the 'train' function. 
+Use 'initNN' to get an initialised neural network and train it using the 'train' function.
 
-You can get the results of your trained network by running 'predict'
+You can get predictions of your trained neural network by running 'predict'.
 -}
 
 module NeuralNetwork (
   -- * DataType
   NeuralNetwork,
   -- * Initialisiation
-  createNeuralNetwork,
+  initNN,
   -- * Prediction
   predict,
   -- * Training
@@ -74,11 +78,11 @@ instance Binary NeuralNetwork where
 -- A network with 784 input-nodes, 2 hidden layers with 1000 nodes each and 10 output-nodes 
 -- 
 -- @> network <- createNeuralNetwork [784,1000,1000,10]@
-createNeuralNetwork :: [Int]            -- ^ List of Nodes per Layer
-                    -> Int              -- ^ Seed for the random generation of nodes    
-                    -> IO (NeuralNetwork)
+initNN :: [Int]               -- ^ List of Nodes per Layer
+       -> Int                 -- ^ Seed for the random generation of nodes
+       -> IO (NeuralNetwork)
 
-createNeuralNetwork config seed = do
+initNN config seed = do
   weights <- sequence [ randomRMatrix (config!!(i+1)) (config!!i) (-1.0, 1.0) seed | i <- [0..((length config)-2)] ]
   let biases = [zeroMatrix (config!!i) 1 | i <- [1..((length config)-1)]]
   return (NeuralNetwork config weights biases)
@@ -268,11 +272,13 @@ multiplyElementwise m1 m2 = fromList (nrows m1) (ncols m2) (zipWith (*) m1List m
         m2List = toList m2
 
 -- | Sigmoid function
-sigmoid :: Float -> Float
+sigmoid :: Float -- ^ x
+        -> Float -- ^ y
         
 sigmoid x = 1 / (1 + exp (-x))
 
--- | Derivate of 'sigmoid'
-sigmoid' :: Float -> Float
-         
+-- | Derivate of Sigmoid funtion
+sigmoid' :: Float -- ^ x
+         -> Float -- ^ y
+
 sigmoid' x = (sigmoid x) * (1 - (sigmoid x))
