@@ -15,7 +15,8 @@ Util functions for Machine Learning.
 module Util (
   argmax,
   toCategorical,
-  shuffle
+  shuffle,
+  reshape
 ) where
 
 import Data.Matrix
@@ -58,6 +59,9 @@ shuffle :: [a] -- ^ unshuffled list
 
 shuffle list seed = shuffle' list (length list) (mkStdGen seed)
 
-reshape :: Matrix a -> Int -> Int -> Matrix a
+reshape :: Matrix a -- ^ matrix
+        -> Int      -- ^ rows
+        -> Int
+        -> Matrix a
 reshape matrix rows columns = fromList rows columns (toList matrix)
 
