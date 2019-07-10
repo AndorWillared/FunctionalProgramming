@@ -147,7 +147,7 @@ main = do
         hiddenLayerNodes <- sequence [ spinButtonGetValueAsInt (castToSpinButton (spinButtonsOfHiddenLayer!!(x-1))) | x <- [1..(length spinButtonsOfHiddenLayer)] ]
         net <- initNN ([784]++ hiddenLayerNodes ++[10]) 42
         learningRate <- spinButtonGetValue trainFactorSelector
-        trainingSamples <- getTrainingSamples "data/train-images" "data/train-labels"
+        trainingSamples <- getTrainingSamples "mnist/train-images.idx3-ubyte" "mnist/train-labels.idx1-ubyte"
         trainedNet <- train net trainingSamples (realToFrac learningRate)
         writeIORef gnn trainedNet
         return ()
