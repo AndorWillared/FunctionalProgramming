@@ -27,7 +27,7 @@ import System.Random.Shuffle (shuffle')
 -- | important: this function is undefined for NxM matrices
 -- __For example:__
 --
--- @> argmax (fromList 4 1 [0,42,1,17]) -- returns 1
+-- @> argmax (fromList 4 1 [0,42,1,17]) -- returns 1 @
 --
 
 argmax :: Matrix Float -- ^ matrix
@@ -38,7 +38,7 @@ argmax matrix = snd $ maximum $ zip (toList matrix) [0..(length (toList matrix))
 -- | 'toCategorical' converts a class to a binary class matrix
 -- __For example:__
 --
--- @> toCategorical 1 3 -- returns [0,1,0]
+-- @> toCategorical 1 3 -- returns [0,1,0] @
 --
 
 toCategorical :: Int          -- ^ class
@@ -50,7 +50,7 @@ toCategorical _class numOfClasses = fromList numOfClasses 1 [if i == _class then
 -- | 'shuffle' shuffles a list
 -- __For example:__
 --
--- @> shuffle [1,2,3] 42 -> returns [3,2,1]
+-- @> shuffle [1,2,3] 42 -> returns [3,2,1] @
 --
 
 shuffle :: [a] -- ^ unshuffled list
@@ -62,7 +62,7 @@ shuffle list seed = shuffle' list (length list) (mkStdGen seed)
 -- | 'reshape' reshapes a matrix
 -- __For example:__
 --
--- @> shuffle [1,2,3] 42 -> returns [3,2,1]
+-- @> shuffle [1,2,3] 42 -> returns [3,2,1] @
 --
 
 reshape :: Matrix a -- ^ matrix to reshape
@@ -70,5 +70,5 @@ reshape :: Matrix a -- ^ matrix to reshape
         -> Int      -- ^ columns of reshaped matrix
         -> Matrix a -- ^ reshaped matrix
 
-reshape matrix rows columns = fromList rows columns (toList matrix)
+reshape matrix rows columns = fromList rows columns (toList (transpose matrix))
 
