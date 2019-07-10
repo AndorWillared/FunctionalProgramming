@@ -71,13 +71,13 @@ instance Binary NeuralNetwork where
     let biases = [fromList (config!!i) 1 (rawBiases!!(i-1)) | i <- [1..((length config)-1)]]
     return (NeuralNetwork config weights biases)
 
--- | 'createNeuralNetwork' creates a randomly initialised network with the specified layers
+-- | 'initNN' creates a randomly initialised network with the specified layers
 --
 -- __For example:__ 
 -- 
 -- A network with 784 input-nodes, 2 hidden layers with 1000 nodes each and 10 output-nodes 
 -- 
--- @> network <- createNeuralNetwork [784,1000,1000,10]@
+-- @> network <- initNN [784,1000,1000,10] 123123@
 initNN :: [Int]               -- ^ List of Nodes per Layer
        -> Int                 -- ^ Seed for the random generation of nodes
        -> IO (NeuralNetwork)

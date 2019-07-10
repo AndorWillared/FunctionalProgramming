@@ -31,10 +31,8 @@ import Codec.Picture.Png
 -- Parsing
 
 -- | 'getTrainingSamples' is used to parse the raw MNIST training data to a representation usable in Haskell
---
-
-getTrainingSamples :: FilePath -- ^ path to "train-images.idx3-ubyte"
-                   -> FilePath -- ^ path to "train-labels.idx3-ubyte"
+getTrainingSamples :: FilePath                              -- ^ Path to "train-images.idx3-ubyte"
+                   -> FilePath                              -- ^ Path to "train-labels.idx3-ubyte"
                    -> IO ([(Matrix Float, Matrix Float)])   -- ^ Training data as a list of pairs, where fst represents an image and snd the corresponding label
 
 getTrainingSamples pathImgs pathLabels = do
@@ -42,12 +40,10 @@ getTrainingSamples pathImgs pathLabels = do
   labels <- parseLabels pathLabels
   return (zip images labels)
 
--- | 'getTestSamples' is used to parse the raw MNIST test data to a representation usable in Haskell
---
-
-getTestSamples :: FilePath   -- ^ path to "t10k-images.idx3-ubyte"
-               -> FilePath   -- ^ path to "t10k-labels.idx3-ubyte"
-               -> IO ([(Matrix Float, Matrix Float)])  -- ^ Test data as a list of pairs, where fst represents an image and snd the corresponding label
+-- | 'getTestSamples' is used to parse the raw MNIST test data to a representation usable in Haskel
+getTestSamples :: FilePath                              -- ^ Path to "t10k-images.idx3-ubyte"
+               -> FilePath                              -- ^ Path to "t10k-labels.idx3-ubyte"
+               -> IO ([(Matrix Float, Matrix Float)])   -- ^ Test data as a list of pairs, where fst represents an image and snd the corresponding label
 
 getTestSamples pathImgs pathLabels = do
   images <- parseImages pathImgs
@@ -70,10 +66,8 @@ parseImages path = do
 -- Png
 
 -- |  'pngToVector' takes a file path and parses it to an equivalent float matrix
---
-
-pngToVector :: FilePath     -- ^ path to a .png file
-            -> IO (Matrix Float)    -- ^ float matrix representing the input file
+pngToVector :: FilePath             -- ^ Path to a .png file
+            -> IO (Matrix Float)    -- ^ Float matrix representing the input file
 
 pngToVector path = do
   pngData <- B.readFile path
@@ -85,8 +79,8 @@ pngToVector path = do
 -- | 'vectorToPng' takes a float matrix and a file path, creates an image representation of the input matrix
 --
 
-vectorToPNG :: Matrix Float     -- ^ float matrix to write
-            -> FilePath     -- ^ path to write the .png to
+vectorToPNG :: Matrix Float -- ^ Float matrix to write
+            -> FilePath     -- ^ Path to write the .png to
             -> IO()
 
 vectorToPNG vector path = writePng path (generateImage (grayscaleAt vector) 28 28)
