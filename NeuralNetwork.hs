@@ -2,11 +2,7 @@
 Module      : NeuralNetwork
 Description : A haskell implementation of a neural network
 License     : MIT
-Maintainer  : adiel.ahmad@mni.thm.de
-              andor.willared@mni.thm.de
-              felix.willared@mni.thm.de
-              marco.herzog@mni.thm.de
-              jannis.weber@mni.thm.de
+Maintainer  : andor.willared@mni.thm.de
 Stability   : experimental
 
 A naive neural-network implementation in haskell. 
@@ -47,7 +43,7 @@ import Data.Binary
 import Data.List.Split
 import System.Random.Shuffle
 
--- | The data type 'NeuralNetwork' represents the state of a network.
+-- | The data type 'NeuralNetwork' represents the state of a neural network.
 --
 -- It contains:
 -- 
@@ -77,7 +73,11 @@ instance Binary NeuralNetwork where
 -- 
 -- A network with 784 input-nodes, 2 hidden layers with 1000 nodes each and 10 output-nodes 
 -- 
+<<<<<<< HEAD
 -- @> network <- initNN [784,1000,1000,10] 123123@
+=======
+-- @> network <- initNN [784,1000,1000,10]@
+>>>>>>> b3b87f968d2006cac406278f6fdcb5d29c6fb36d
 initNN :: [Int]               -- ^ List of Nodes per Layer
        -> Int                 -- ^ Seed for the random generation of nodes
        -> IO (NeuralNetwork)
@@ -87,7 +87,7 @@ initNN config seed = do
   let biases = [zeroMatrix (config!!i) 1 | i <- [1..((length config)-1)]]
   return (NeuralNetwork config weights biases)
 
--- | 'predict' takes an network and a fitting input and runs a forwardPass with these parameters. 
+-- | 'predict' takes a network and an input, then runs a forwardPass with these parameters.
 -- The resulting output 'Matrix' is returned
 predict :: NeuralNetwork    -- ^ Trained 'NeuralNetwork' that will be used to 'predict' an output 
         -> Matrix Float     -- ^ Matrix of the input values for the given network
@@ -106,7 +106,7 @@ forwardPass nn input = input : forwardPass' (weights nn) (biases nn) input
 -- | A helper function that provides the recursive calculation of the activations of the network and returns them.
 forwardPass' :: [Matrix Float]  -- ^ Weights of the network
              -> [Matrix Float]  -- ^ Biases
-             -> Matrix Float    -- ^ Activation of the previous recursion (initialised with [])
+             -> Matrix Float    -- ^ Activation of the previous recursion (starts with [])
              -> [Matrix Float]
              
 forwardPass' [] _ activation = []
@@ -114,17 +114,17 @@ forwardPass' _ [] activation = []
 forwardPass' (w:weights) (b:biases) activation = nextActivation : forwardPass' weights biases nextActivation
   where nextActivation = fmap sigmoid ((multStd w activation) + b)
 
--- | The function 'train' should be used to train the network with the passed inputs/outputs and the specified learning rate.
--- Returns the updated 'NeuralNetwork' as 'IO'
+-- | 'train' should be used to train the network with the passed inputs/outputs and the specified learning rate.
+
 train :: NeuralNetwork                  -- ^ Network
       -> [(Matrix Float, Matrix Float)] -- ^ List of Tupels of the corresponding in-/output matrices
-      -> Float                          -- ^ Learing rate
-      -> IO (NeuralNetwork)
+      -> Float                          -- ^ Learning rate
+      -> IO (NeuralNetwork)             -- ^ Updated 'NeuralNetwork'
       
 train nn ((input, output):samples) learningRate = train' nn samples learningRate 0 0
 
 -- | 'train\'' should not be used manually or only for testing purpose. 
--- It is called by 'train' and traines the network by applying the 'backprop' function and passing the outcome to the next recursion of 'train\''. 
+-- It is called by 'train' and trains the network by applying the 'backprop' function and passing the outcome to the next recursion of 'train\''.
 -- Returns the trained network as IO.
 train' :: NeuralNetwork                     -- ^ Network
        -> [(Matrix Float, Matrix Float)]    -- ^ List of Tupels of the corresponding in-/output matrices
@@ -162,10 +162,10 @@ backprop nn input output learningRate totalError totalIterations = do
   return (BackpropResult updatedNN (totalError + err) (totalIterations + 1))
     where activations = forwardPass nn input
 
--- | Applies an list of updates to a given network and returns the updated 'NeuralNetwork'
+-- | Applies a list of updates to a given network and returns the updated 'NeuralNetwork'
 apply :: NeuralNetwork                  -- ^ Network
       -> [(Matrix Float,Matrix Float)]  -- ^ List of Tupels of weight and bias update matrices
-      -> Float                          -- ^ Learing rate
+      -> Float                          -- ^ Learning rate
       -> NeuralNetwork                  
       
 apply nn updates learningRate = NeuralNetwork (config nn) (update (weights nn) (fst (unzip updates)) learningRate) (update (biases nn) (snd (unzip updates)) learningRate)
@@ -174,14 +174,14 @@ apply nn updates learningRate = NeuralNetwork (config nn) (update (weights nn) (
 -- Returns the updated list of matrices.
 update :: [Matrix Float]    -- ^ matrices to update
        -> [Matrix Float]    -- ^ update matrices
-       -> Float             -- ^ Learing rate 
+       -> Float             -- ^ Learning rate
        -> [Matrix Float]
        
 update [] _ _ = []
 update _ [] _ = []
 update (m:matrices) (u:updates) learningRate = m - fmap (*learningRate) u : update matrices updates learningRate
 
--- | Todo
+-- |
 gradients :: [Matrix Float] 
           -> [Matrix Float] 
           -> [Matrix Float] 
@@ -195,11 +195,11 @@ gradients (w:weights) (b:biases) (a:activations) error = (multStd error' (transp
   where error' = multiplyElementwise error (fmap sigmoid' ((multStd w a) + (b)))
         error'' = multStd (transpose w) error'
 
--- | The 'serialize' function is used to write a network to a specified file path as a binary file. Use 'deserialize' to read this file.
+-- | 'serialize' is used to write a network to a specified file path as a binary file. Use 'deserialize' to read this file.
 -- Alternatively you can use 'serializePlain' and 'deserializePlain' to save/read as text file.
 serialize :: NeuralNetwork  -- ^ Network that should be saved
           -> FilePath       -- ^ Relative path to the file
-          -> IO ()          -- ^
+          -> IO ()
           
 serialize nn path = do
   BSL.writeFile path (encode nn)
@@ -216,8 +216,8 @@ deserialize path = do
   nn <- decodeFile path :: IO (NeuralNetwork)
   return nn
 
--- | Used the same as 'serialize' but saves the network as text instead of binary. 
--- Use 'deserializePlain' to read these files!
+-- | Same usage as 'serialize', but saves the network as text instead of binary.
+-- Use 'deserializePlain' to read these files.
 serializePlain :: NeuralNetwork -- ^ Network that should be saved
                -> FilePath      -- ^ Relative path to the file
                -> IO ()
@@ -229,7 +229,7 @@ serializePlain nn path = do
     ++ (concat [ toList ((weights nn)!!i) | i <- [0..((length (config nn))-2)] ])
     ++ (concat [ toList ((biases nn)!!i) | i <- [0..((length (config nn))-2)] ])))
 
--- | Used the same as 'deserialize' but reads the network as text instead of binary. 
+-- | Same usage as 'deserialize' but reads the network from text instead of binary.
 deserializePlain :: FilePath    -- ^ Relative path to the file
                  -> IO (NeuralNetwork)
                  
@@ -245,27 +245,27 @@ deserializePlain path = do
 
 -- Helper
 
--- | Generates a IO matrix with the specified dimensions, initialised with a random number in the given range.
+-- | Generates an IO matrix with the specified dimensions, initialised with a random number in the given range.
 randomRMatrix :: Int                -- ^ (m) Number of rows 
               -> Int                -- ^ (n) Number of columns
               -> (Float, Float)     -- ^ Range of the random numbers e.g. (-1,1)
               -> Int                -- ^ Seed for the random generator
-              -> IO (Matrix Float)  
+              -> IO (Matrix Float)  -- ^ Initialised Matrix (m x n)
               
 randomRMatrix rows columns range seed = do
                                     let weights = randomRs range (mkStdGen seed)
                                     return (matrix rows columns (\(row, column) -> weights!!(column+row*columns)))
--- | Generates a matrix with the specified dimensions, initialised 0's.
+-- | Generates a matrix with the specified dimensions, initialised with 0's.
 zeroMatrix :: Int           -- ^ (m) Number of rows
            -> Int           -- ^ (n) Number of columns
-           -> Matrix Float
+           -> Matrix Float  -- ^ Initialised Matrix (m x n)
            
 zeroMatrix rows columns = matrix rows columns (\(i, j) -> 0.0)
 
--- | The function 'multiplyElementwise' is used to multiply each element of matrix A with the element at the same position in matrix B.
+-- | 'multiplyElementwise' is used to multiply each element of matrix A with the element at the same position in matrix B.
 multiplyElementwise :: Matrix Float -- ^ Matrix A
                     -> Matrix Float -- ^ Matrix B
-                    -> Matrix Float
+                    -> Matrix Float -- ^ Result matrix
                     
 multiplyElementwise m1 m2 = fromList (nrows m1) (ncols m2) (zipWith (*) m1List m2List)
   where m1List = toList m1
@@ -273,12 +273,12 @@ multiplyElementwise m1 m2 = fromList (nrows m1) (ncols m2) (zipWith (*) m1List m
 
 -- | Sigmoid function
 sigmoid :: Float -- ^ x
-        -> Float -- ^ y
+        -> Float -- ^ f(x)
         
 sigmoid x = 1 / (1 + exp (-x))
 
 -- | Derivate of Sigmoid funtion
 sigmoid' :: Float -- ^ x
-         -> Float -- ^ y
+         -> Float -- ^ f(x)
 
 sigmoid' x = (sigmoid x) * (1 - (sigmoid x))
