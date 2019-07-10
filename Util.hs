@@ -27,7 +27,6 @@ import System.Random.Shuffle (shuffle')
 -- __For example:__
 --
 -- @> argmax (fromList 4 1 [0,42,1,17]) -- returns 1 @
---
 
 argmax :: Matrix Float -- ^ matrix
        -> Int          -- ^ argmax
@@ -39,11 +38,10 @@ argmax matrix = snd $ maximum $ zip (toList matrix) [0..(length (toList matrix))
 -- __For example:__
 --
 -- @> toCategorical 1 3 -- returns [0,1,0] @
---
 
-toCategorical :: Int          -- ^ class
-              -> Int          -- ^ number of classes
-              -> Matrix Float -- ^ binary class matrix
+toCategorical :: Int          -- ^ Class
+              -> Int          -- ^ Number of classes
+              -> Matrix Float -- ^ Binary class matrix
 
 toCategorical _class numOfClasses = fromList numOfClasses 1 [if i == _class then 1 else 0 | i <- [0..numOfClasses-1]]
 
@@ -52,11 +50,10 @@ toCategorical _class numOfClasses = fromList numOfClasses 1 [if i == _class then
 -- __For example:__
 --
 -- @> shuffle [1,2,3] 42 -> returns [3,2,1] @
---
 
-shuffle :: [a] -- ^ unshuffled list
-        -> Int -- ^ seed
-        -> [a] -- ^ shuffled list
+shuffle :: [a] -- ^ Unshuffled list
+        -> Int -- ^ Seed
+        -> [a] -- ^ Shuffled list
 
 shuffle list seed = shuffle' list (length list) (mkStdGen seed)
 
@@ -65,12 +62,11 @@ shuffle list seed = shuffle' list (length list) (mkStdGen seed)
 -- __For example:__
 --
 -- @> shuffle [1,2,3] 42 -> returns [3,2,1] @
---
 
-reshape :: Matrix a -- ^ matrix to reshape
-        -> Int      -- ^ rows of reshaped matrix
-        -> Int      -- ^ columns of reshaped matrix
-        -> Matrix a -- ^ reshaped matrix
+reshape :: Matrix a -- ^ Matrix to reshape
+        -> Int      -- ^ Rows of reshaped matrix
+        -> Int      -- ^ Columns of reshaped matrix
+        -> Matrix a -- ^ Reshaped matrix
 
 reshape matrix rows columns = fromList rows columns (toList (transpose matrix))
 
