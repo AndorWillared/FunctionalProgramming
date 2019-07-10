@@ -6,6 +6,8 @@ import Data.Matrix as M
 import Codec.Picture.Png
 import Codec.Picture.Types
 import Data.Text
+import NeuralNetwork
+import Util
 
 -- constants_begin
 matrix_width = 28
@@ -71,6 +73,8 @@ toInt = round
 main :: IO ()
 main =
   do
+    net <- (createNeuralNetwork [] 101)
+    gnn <- newIORef net
     mouseClickState <- newIORef False
     drawSpots' <- newIORef (M.zero matrix_width matrix_height)
     initGUI
@@ -83,10 +87,21 @@ main =
     displayField <- labelNew (Just " ")
 
     spinBtn <- spinButtonNewWithRange 0 999999 1
-    --set spinBtn [ buttonLabel := "iteration" ]
 
     entryField <- entryNew
     set entryField [ entryPlaceholderText := Just("class") ]
+
+    loadField <- entryNew
+    set loadField [ entryPlaceholderText := Just("Networkpath") ]
+
+    loadBtn <- buttonNew
+    set loadBtn [ buttonLabel := "loadButton" ]
+    on loadBtn buttonActivated $ do
+      nnPath <- entryGetText loadField
+      loadedNet <- deserialize nnPath
+      liftIO $ labelSetText displayField "Status: Netz geladen."
+      writeIORef gnn loadedNet
+      return ()    
 
     saveBtn <- buttonNew
     set saveBtn [ buttonLabel := "save" ]
@@ -102,6 +117,11 @@ main =
     set predictBtn [ buttonLabel := "predict" ]
     on predictBtn buttonActivated $ do
       liftIO $ labelSetText displayField "predict called"
+      localNN <- liftIO $ (readIORef gnn)
+      matrix <- liftIO $ (readIORef drawSpots')
+      let prediction = predict localNN (fmap fromIntegral matrix)
+      let res = argmax prediction
+      liftIO $ labelSetText displayField ("Wert: " ++ (show res))
       return ()
 
     resetBtn <- buttonNew
@@ -167,6 +187,8 @@ main =
     
     on window objectDestroy destroyEventHandler
     boxPackStart vBox displayField PackNatural 0
+    boxPackStart hBox loadField PackGrow 0
+    boxPackStart hBox loadBtn PackGrow 0
 
     boxPackStart hBox resetBtn PackGrow 0
     boxPackStart hBox predictBtn PackGrow 0
@@ -187,6 +209,8 @@ main =
     widgetShow entryField
     widgetShow spinBtn
     widgetShow saveBtn
+    widgetShow loadBtn
+    widgetShow loadField
     widgetShow paintArea
     widgetShow hBox
     widgetShow vBox
