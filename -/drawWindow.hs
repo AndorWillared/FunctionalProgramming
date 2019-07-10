@@ -11,19 +11,12 @@ import Data.Text
 matrix_width = 28
 matrix_height = 28
 tile_size = 24
-tile_size_sub_1 = 23.0
+tile_sizeD = 24.0
 least_opacity = 255
 window_width = matrix_width * tile_size + 200
 window_height = matrix_width * tile_size
 placeholder = "aasdf"
 -- constants_end 
-
-first :: (a,a,b) -> a
-first (val,_,_) = val
-second :: (a,a,b) -> a
-second (_,val,_) = val
-third :: (a,a,b) -> b
-third (_,_,val) = val
 
 checkAdjacent :: Int -> Int -> Bool
 checkAdjacent x y =
@@ -33,34 +26,25 @@ checkAdjacent x y =
     else 
       False
 
-getAdjacent :: Int -> Int -> Double -> [(Int,Int,Double)]
-getAdjacent x y c = [ (xs,ys,(c + c / 2)) | xs <- [(x-1),(x+1)], ys <- [(y-1),(y+1)], checkAdjacent xs ys]
+getAdjacentY :: Int -> Int -> [(Int,Int)]
+getAdjacentY x y = [ (x,ys) | ys <- [(y-1),(y+1)], checkAdjacent x ys]
+
+getAdjacentX :: Int -> Int -> [(Int,Int)]
+getAdjacentX x y = [ (xs,y) | xs <- [(x-1),(x+1)], checkAdjacent xs y]
 
 drawCoordinateSpot :: Double -> Int -> Int -> C.Render ()
 drawCoordinateSpot rgb i j =
   do
-    C.rectangle (fromIntegral (tile_size*i + 1)) (fromIntegral(tile_size * j + 1)) tile_size_sub_1 tile_size_sub_1
+    liftIO $ putStrLn $ show $ rgb
+    C.rectangle (fromIntegral (tile_size * i)) (fromIntegral(tile_size * j)) tile_sizeD tile_sizeD
     C.setSourceRGB rgb rgb rgb
     C.fill
 
-drawCoordinateSpots :: Double -> Int -> Int -> C.Render ()
-drawCoordinateSpots rgb i j =
-  do
-    -- draw one spot
-    drawCoordinateSpot rgb i j
-    -- draw surrounding spots
-    if rgb > 0
-      then
-        forM_ (getAdjacent i j rgb) $ \adj -> do
-          drawCoordinateSpot (third adj) (first adj) (second adj)
-      else
-        return ()
-
 drawCoordinates :: M.Matrix Int -> C.Render ()
-drawCoordinates m =
+drawCoordinates m = do
   forM_ [0..(matrix_height-1)] $ \y -> do 
     forM_ [0..(matrix_width-1)] $ \x -> do
-      drawCoordinateSpots (fromIntegral (M.getElem (x+1) (y+1) m)) x y
+      drawCoordinateSpot (fromIntegral ((M.getElem (x+1) (y+1) m))/255) x y
 
 destroyEventHandler :: IO ()
 destroyEventHandler =
@@ -155,6 +139,15 @@ main =
               if x > 0 && x < window_height && y > 0 && y < window_height 
                 then do
                   liftIO $ writeIORef drawSpots' (M.setElem 255 (convert' x, convert' y) localDrawSpots')
+                  -- PENCIL START
+                  forM_ ((getAdjacentX (convert' x) (convert' y)) ++ (getAdjacentY (convert' x) (convert' y))) $ \adj -> do
+                    localDrawSpots' <- liftIO $ (readIORef drawSpots')
+                    if (M.getElem (fst adj) (snd adj) localDrawSpots' >= 255)
+                      then do
+                        return ()
+                      else
+                        liftIO $ writeIORef drawSpots' (M.setElem (255`div`2) (fst adj, snd adj) localDrawSpots')
+                  -- PENCIL END
                   liftIO (updateCanvas paintArea)
                 else
                   return False
